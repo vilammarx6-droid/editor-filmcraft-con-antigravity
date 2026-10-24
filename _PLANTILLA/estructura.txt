@@ -1,0 +1,16 @@
+﻿[AAAA-MM-DD_slug]
+├── 00_brief/
+│   └── brief.md
+├── 01_fuentes/
+│   ├── video/
+│   ├── audio/
+│   ├── musica/
+│   └── graficos/
+├── 02_filmcraft/
+│   └── slug_v01.fcproj
+├── 03_exports/
+│   └── slug_v01_formato.mp4
+├── 04_previews/
+│   └── slug_v01_00-15s.png
+└── 05_logs/
+    └── edit-log.md

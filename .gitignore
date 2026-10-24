@@ -1,0 +1,44 @@
+# ==========================================
+# GitIgnore para EditorVideo - FilmCraft + Antigravity
+# ==========================================
+
+# Archivos del sistema operativo
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+venv/
+env/
+ENV/
+
+# Archivos temporales de trabajo
+scratch/
+temp/
+tmp/
+*.tmp
+*.log
+
+# Exportaciones pesadas de video (GitHub bloquea archivos > 100MB)
+# Se conservan los archivos .gitkeep para mantener la estructura
+PROYECTOS/**/03_exports/*.mp4
+PROYECTOS/**/03_exports/*.mov
+PROYECTOS/**/03_exports/*.mkv
+PROYECTOS/**/03_exports/*.avi
+PROYECTOS/**/02_filmcraft/*.mp4
+
+# FilmCraft temporales / autosave
+*.fcproj.backup
+*.fcproj.tmp

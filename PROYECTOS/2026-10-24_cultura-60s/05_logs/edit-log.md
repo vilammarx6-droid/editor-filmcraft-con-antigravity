@@ -1,0 +1,40 @@
+# Edit log — cultura-60s
+
+- 2026-10-24 — Proyecto creado (vertical_720, 720x1280, 30 fps).
+- 2026-10-24 — Secuencia `Principal` ampliada a 5 pistas de video.
+- 2026-10-24 — Montaje de 10 secciones de 6 s (60 s en total):
+  - Fondo: color matte con gradiente de cuatro colores, viñeta y movimiento lento de escala/rotación.
+  - Título grande y subtítulo por sección, con animaciones de escala, posición, rotación y opacidad.
+  - Elipse translúcida detrás del título, marco rectangular y polígono de acento, todos animados.
+  - Etiqueta de sección 01/10 a 10/10.
+- 2026-10-24 — 9 transiciones aplicadas: whip, glitch, slide, cross_zoom, flash, zoom_blur, light_sweep, push y cross_dissolve.
+- 2026-10-24 — Correcciones:
+  - Título CULTURA reducido a 112 px para que no se corte.
+  - TRADICIÓN e IDENTIDAD reducidos a 96 px.
+  - Subtítulos reducidos a 38 px para que quepan en vertical.
+  - Fondos reconstruidos con fuente de 8 s y clip de 6 s para dar handles a las transiciones.
+  - Polígonos reconstruidos animando `graphic_shape` en lugar de `motion`, para que no salgan de cuadro.
+  - Elementos sin uso eliminados del proyecto.
+- 2026-10-24 — Previews de control en `04_previews`.
+- 2026-10-24 — Montaje completo de Audio (3 pistas independientes):
+  - A1: Música electrónica instrumental `Aitech_Electro_105BPM` (105.26 BPM), 60s, con fade-in 0.5s, fade-out 1.5s y ducking automático de −7 dB durante locución.
+  - A2: 39 efectos de sonido (SFX) sincronizados a 48 kHz estéreo:
+    - 10 Impactos al inicio de cada bloque (0s, 6s, 12s, 18s, 24s, 30s, 36s, 42s, 48s, 54s).
+    - 9 Transiciones específicas en cada corte (whoosh en whip, glitch en stutter, swoosh en slide, riser en cross zoom, flash impact, whoosh metálico en zoom blur, shimmer en light sweep, bass hit en push, reverse swell en cross dissolve).
+    - 10 Pops cortos en la entrada de cada título (frame 6, 186, 366, 546, 726, 906, 1086, 1266, 1446, 1626).
+    - 10 Ticks suaves en la aparición de cada subtítulo (frame 90, 270, 450, 630, 810, 990, 1170, 1350, 1530, 1710).
+  - A3: Locución neural humana en español para los 10 bloques generada con `edge-tts` (`es-PE-AlexNeural`) convertida a WAV 48 kHz.
+- 2026-10-24 — Masterización acústica:
+  - Calibración a estándar broadcast: −14 LUFS integrados y picos a −1 dBTP.
+  - Efectos balanceados a −8 dB respecto a la música.
+  - Curvas de transición `constant_power` aplicadas a las pistas de audio en FilmCraft.
+- 2026-10-24 — Previews exportadas a `04_previews`:
+  - `cultura-60s_v01_01_cultura.png`
+  - `cultura-60s_v01_03_danza.png`
+  - `cultura-60s_v01_06_lengua.png`
+  - `cultura-60s_v01_10_identidad.png`
+- 2026-10-24 — Export final completado y verificado:
+  - Archivo: `03_exports/cultura-60s_v01_vertical_720.mp4`
+  - Video: H.264 High, 720x1280, 30 fps, ~8.2 Mbps.
+  - Audio: AAC estéreo, 48 kHz, 320 kbps.
+  - Duración: 60.000 s (1800 frames exactos), 63.89 MB.

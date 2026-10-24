@@ -1,0 +1,39 @@
+# Edit log — cumbia-sombras-3m
+
+- 2026-10-24 — Proyecto creado con formato `vertical_720` (720x1280, 30 fps, audio estéreo 48 kHz).
+- 2026-10-24 — Definición de Brief (`00_brief/brief.md`):
+  - Duración exacta: 3 minutos (180.00 segundos / 5400 frames).
+  - 10 bloques temáticos culturales de 18.0 s cada uno: CULTURA, RITMO, DANZA, TRADICIÓN, FIESTA, COLOR, PASIÓN, SABOR, MEMORIA e IDENTIDAD.
+  - Siluetas de bailarines en negro total (`#000000`) con canal alfa suave sobre fondos vibrantes y cálidos.
+  - Coreografía en movimiento continuo al ritmo de cumbia bailable (95.2 BPM).
+- 2026-10-24 — Fuentes de Audio:
+  - Pista A1 Música: `No Frills Cumbia Faster` por Kevin MacLeod (CC-BY 3.0), masterizada a 180.00 s en WAV 48 kHz estéreo a −14 LUFS / −1 dBTP con fade-in de 0.4 s y fade-out musical de 3.5 s.
+  - Pista A2 Efectos: 180.00 s sincronizados con bombos andinos tradicionales (tinya), cascabeles de qorilazo, charango, diana de wakawaqra, comparsas carnavalescas, risers de tensión y whooshes cinematográficos en cada una de las 10 transiciones.
+- 2026-10-24 — Fuentes Gráficas y Visuales:
+  - 10 Fondos culturales 720x1280 con iluminación spotlight concéntrica, gradientes cálidos y viñeta cinematográfica.
+  - 10 Siluetas de bailarines tradicionales generadas con alta fidelidad vectorial y convertidas a RGBA transparente `#000000`.
+  - Animación continua a 30 fps sincronizada a 95.2 BPM:
+    - Balanceo lateral rítmico (sway 2-step de cumbia, ±35 px).
+    - Rebote vertical de compás (bounce downbeat, 14 px).
+    - Inclinación orgánica de torso y sombrero (rotación ±3.2°).
+    - Pulso de respiración y escala rítmica (1.00 a 1.04).
+    - Ken Burns suave en fondo (zoom lento 1.00 a 1.035).
+    - Tipografía en tres niveles: Badge superior con cápsula dorada, Título principal con sombra de contraste, y Subtítulo dorado cálido.
+- 2026-10-24 — Montaje en FilmCraft (`cumbia-sombras-3m_v01.fcproj`):
+  - V1: 10 clips de video animados colocados secuencialmente (540 frames / 18 s cada uno).
+  - V1 Transiciones: 9 transiciones aplicadas entre cortes (`whip`, `cross_zoom`, `flash`, `slide`, `push`, `zoom_blur`, `light_sweep`, `cross_dissolve`, `additive_dissolve`).
+  - A1: Pista completa de cumbia cultural masterizada (180 s).
+  - A2: Pista completa de efectos sonoros y percusión tradicional sincronizada (180 s).
+  - Guardado con `file.save` (revisión 1546).
+- 2026-10-24 — Previews de control en `04_previews`:
+  - `cumbia-sombras-3m_v01_01_cultura.png` (8.0 s)
+  - `cumbia-sombras-3m_v01_03_danza.png` (44.0 s)
+  - `cumbia-sombras-3m_v01_06_color.png` (98.0 s)
+  - `cumbia-sombras-3m_v01_10_identidad.png` (168.0 s)
+- 2026-10-24 — Exportación Final:
+  - Archivo: `03_exports/cumbia-sombras-3m_v01_vertical_720.mp4`
+  - Formato: H.264 High Profile, 720x1280, 30.0 fps, 8.32 Mbps.
+  - Audio: AAC estéreo, 48 kHz.
+  - Duración exacta: 180.01 s (3:00 min / 5400 frames).
+  - Tamaño: 187.30 MB.
+

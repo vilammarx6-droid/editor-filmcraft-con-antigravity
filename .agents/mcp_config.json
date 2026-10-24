@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "filmcraft": {
+      "command": "C:\\Users\\marx_\\.gemini\\antigravity\\scratch\\craft_tools\\filmcraft\\filmcraft-0.9.0-windows-x64-portable\\filmcraft-cli.exe",
+      "args": ["--bridge", "127.0.0.1:8765", "mcp"]
+    }
+  }
+}
