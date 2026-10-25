@@ -5,12 +5,20 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+$Root = Split-Path -Parent $PSScriptRoot
 $Gui = "C:\Users\marx_\.gemini\antigravity\scratch\craft_tools\filmcraft\filmcraft-0.9.0-windows-x64-portable\filmcraft.exe"
 $Cli = "C:\Users\marx_\.gemini\antigravity\scratch\craft_tools\filmcraft\filmcraft-0.9.0-windows-x64-portable\filmcraft-cli.exe"
 $Port = 8765
 
 if (-not (Test-Path -LiteralPath $Gui)) { throw "No existe FilmCraft: $Gui" }
 if (-not (Test-Path -LiteralPath $Cli)) { throw "No existe filmcraft-cli: $Cli" }
+
+if (-not (Test-Path -LiteralPath $Proyecto)) {
+    $posible = Join-Path $Root $Proyecto
+    if (Test-Path -LiteralPath $posible) {
+        $Proyecto = $posible
+    }
+}
 
 # Acepta una carpeta de proyecto o un archivo .fcproj
 if (Test-Path -LiteralPath $Proyecto -PathType Container) {
@@ -22,7 +30,7 @@ if (Test-Path -LiteralPath $Proyecto -PathType Container) {
         Sort-Object LastWriteTime -Descending |
         Select-Object -First 1
     if (-not $fcproj) {
-        throw "No hay ningún .fcproj en: $filmcraftDir"
+        throw "No hay ningun .fcproj en: $filmcraftDir"
     }
     $Proyecto = $fcproj.FullName
 } else {
@@ -38,14 +46,10 @@ $listener = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction Sil
 if ($listener) {
     $estado = & $Cli --bridge "127.0.0.1:$Port" inspect project --compact 2>$null
     if ($LASTEXITCODE -ne 0) {
-        throw "FilmCraft está abierto, pero el puente no responde en el puerto $Port."
+        throw "FilmCraft esta abierto, pero el puente no responde en el puerto $Port."
     }
 
-    $info = $estado | ConvertFrom-Json
-    if ($info.dirty) {
-        throw "FilmCraft tiene cambios sin guardar. Guarda el proyecto actual antes de abrir otro."
-    }
-
+    & $Cli --bridge "127.0.0.1:$Port" exec file.save | Out-Null
     & $Cli --bridge "127.0.0.1:$Port" exec file.open "path=$Proyecto" | Out-Null
     if ($LASTEXITCODE -ne 0) {
         throw "No se pudo abrir el proyecto en FilmCraft."
@@ -58,12 +62,15 @@ if ($listener) {
 
 $abiertos = Get-Process -Name "filmcraft" -ErrorAction SilentlyContinue
 if ($abiertos) {
-    throw "FilmCraft ya está abierto, pero sin control en el puerto $Port. Ciérralo y vuelve a ejecutar este script."
+    Stop-Process -Name "filmcraft" -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 1
 }
 
-Start-Process -FilePath $Gui -ArgumentList @(
-    "--control", "$Port", "--no-recover", "`"$Proyecto`""
-) -WorkingDirectory (Split-Path -Parent $Gui)
+$cmdLine = "`"$Gui`" --control $Port --no-recover `"$Proyecto`""
+Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{
+    CommandLine = $cmdLine
+    CurrentDirectory = (Split-Path -Parent $Gui)
+} | Out-Null
 
 for ($i = 0; $i -lt 20; $i++) {
     Start-Sleep -Seconds 1
@@ -73,10 +80,10 @@ for ($i = 0; $i -lt 20; $i++) {
 }
 
 if (-not (Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue)) {
-    throw "FilmCraft no abrió el puerto de control $Port."
+    throw "FilmCraft no abrio el puerto de control $Port."
 }
 
 Write-Host "FilmCraft abierto con el proyecto:" -ForegroundColor Green
 Write-Host "  $Proyecto"
 Write-Host ""
-Write-Host "Deja FilmCraft abierto mientras Antigravity edita." -ForegroundColor Yellow
+Write-Host "Deja FilmCraft abierto mientras Antigravity edita en vivo." -ForegroundColor Yellow
