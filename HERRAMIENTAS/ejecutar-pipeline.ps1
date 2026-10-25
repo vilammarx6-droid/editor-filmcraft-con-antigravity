@@ -110,10 +110,71 @@ if (-not $masterVideos) {
         if ($LASTEXITCODE -ne 0) {
             Write-Host "`n[BLOQUEO DE CALIDAD] El master NO cumple los estandares de emision." -ForegroundColor Red
             Write-Host "Ejecuta: python .\HERRAMIENTAS\remediar-audio.py `"$targetVideo`"" -ForegroundColor Yellow
+            
+            # Registrar run.json con estado fallido
+            $failedRun = @{
+                session_id      = [Guid]::NewGuid().ToString()
+                timestamp_utc   = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+                pipeline_status = "FAILED_QUALITY_GATE"
+                exit_code       = 1
+                project         = (Split-Path -Leaf $Proyecto)
+                target_video    = (Split-Path -Leaf $targetVideo)
+            }
+            $failedRun | ConvertTo-Json -Depth 5 | Set-Content -Path (Join-Path $Proyecto "05_logs\run.json") -Encoding UTF8
             exit 1
         }
     }
 }
+
+# 6. Generar Traza Estructurada run.json con Hashes Criptograficos Reales
+$sessionId = [Guid]::NewGuid().ToString()
+$timestampUtc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+
+$artifacts = @()
+$candidateFiles = @(
+    (Join-Path $Proyecto "00_brief\brief.md"),
+    (Join-Path $Proyecto "01_fuentes\audio\locucion.wav"),
+    (Join-Path $Proyecto "01_fuentes\audio\locucion.srt"),
+    (Join-Path $Proyecto "04_previews\collage_qc.png")
+)
+if ($masterVideos -and $masterVideos.Count -gt 0) {
+    $candidateFiles += $masterVideos[0].FullName
+}
+$fcDir = Join-Path $Proyecto "02_filmcraft"
+$fcprojFile = Get-ChildItem -LiteralPath $fcDir -Filter "*.fcproj" -File -ErrorAction SilentlyContinue |
+    Where-Object { $_.DirectoryName -notmatch "Auto-Save" } | Select-Object -First 1
+if ($fcprojFile) { $candidateFiles += $fcprojFile.FullName }
+
+foreach ($cf in $candidateFiles) {
+    if (Test-Path -LiteralPath $cf) {
+        $hashObj = Get-FileHash -LiteralPath $cf -Algorithm SHA256
+        $item = Get-Item -LiteralPath $cf
+        $artifacts += @{
+            file        = (Split-Path -Leaf $cf)
+            rel_path    = $cf.Replace($Proyecto, "").TrimStart("\/")
+            sha256      = $hashObj.Hash
+            size_bytes  = $item.Length
+            modified    = $item.LastWriteTimeUtc.ToString("yyyy-MM-ddTHH:mm:ssZ")
+        }
+    }
+}
+
+$runManifest = @{
+    schema_version   = "1.0.0"
+    session_id       = $sessionId
+    timestamp_utc    = $timestampUtc
+    pipeline_status  = "SUCCESS"
+    exit_code        = 0
+    project          = (Split-Path -Leaf $Proyecto)
+    target_video     = if ($masterVideos) { $masterVideos[0].Name } else { $null }
+    quality_gate     = "PASSED"
+    artifacts_count  = $artifacts.Count
+    artifacts        = $artifacts
+}
+
+$runJsonPath = Join-Path $Proyecto "05_logs\run.json"
+$runManifest | ConvertTo-Json -Depth 5 | Set-Content -Path $runJsonPath -Encoding UTF8
+Write-Host "-> Traza de ejecucion verificable registrada: $runJsonPath" -ForegroundColor Cyan
 
 Write-Host "`n[EXITO] Pipeline completado. Todos los contratos y estandares fueron satisfechos." -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Cyan
