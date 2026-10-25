@@ -3,7 +3,7 @@ import wave
 import subprocess
 import numpy as np
 
-OUTPUT_DIR = r"C:\Users\marx_\OneDrive\Documentos\Proyecto predeterminado\EditorVideo\RECURSOS_COMPARTIDOS\01_musica"
+OUTPUT_DIR = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), "RECURSOS_COMPARTIDOS"\01_musica"
 SR = 48000
 
 def export_mp3(wav_path, mp3_path):

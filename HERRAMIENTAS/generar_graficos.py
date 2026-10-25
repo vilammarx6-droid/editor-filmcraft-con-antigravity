@@ -2,7 +2,7 @@ import os
 import math
 from PIL import Image, ImageDraw, ImageFilter
 
-OUTPUT_DIR = r"C:\Users\marx_\OneDrive\Documentos\Proyecto predeterminado\EditorVideo\RECURSOS_COMPARTIDOS\03_animaciones_y_graficos"
+OUTPUT_DIR = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), "RECURSOS_COMPARTIDOS"\03_animaciones_y_graficos"
 
 def gen_circulo():
     size = (800, 800)

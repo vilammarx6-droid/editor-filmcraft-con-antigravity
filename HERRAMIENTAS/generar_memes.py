@@ -3,8 +3,8 @@ import wave
 import subprocess
 import numpy as np
 
-MEME_SFX_DIR = r"C:\Users\marx_\OneDrive\Documentos\Proyecto predeterminado\EditorVideo\RECURSOS_COMPARTIDOS\02_efectos_sonido\memes_y_virales"
-MEME_MUS_DIR = r"C:\Users\marx_\OneDrive\Documentos\Proyecto predeterminado\EditorVideo\RECURSOS_COMPARTIDOS\01_musica\memes_y_virales"
+MEME_SFX_DIR = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), "RECURSOS_COMPARTIDOS"\02_efectos_sonido\memes_y_virales"
+MEME_MUS_DIR = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), "RECURSOS_COMPARTIDOS"\01_musica\memes_y_virales"
 SR = 48000
 
 def save_wav(filename, stereo_data):

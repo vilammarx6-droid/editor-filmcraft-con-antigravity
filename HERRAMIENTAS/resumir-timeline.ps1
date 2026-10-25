@@ -6,26 +6,68 @@ param(
 $ErrorActionPreference = "Stop"
 
 $workspaceRoot = Split-Path -Parent $PSScriptRoot
+
 if (-not (Test-Path -LiteralPath $Proyecto)) {
-    $posible = Join-Path $workspaceRoot $Proyecto
-    if (Test-Path -LiteralPath $posible) { $Proyecto = $posible }
+    $candidatos = @(
+        (Join-Path $workspaceRoot $Proyecto),
+        (Join-Path $workspaceRoot "PROYECTOS\$Proyecto")
+    )
+    $hallado = $candidatos | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+    
+    if (-not $hallado) {
+        # Búsqueda por coincidencia parcial en PROYECTOS
+        $proyectosDir = Join-Path $workspaceRoot "PROYECTOS"
+        if (Test-Path $proyectosDir) {
+            $match = Get-ChildItem -LiteralPath $proyectosDir -Directory |
+                Where-Object { $_.Name -like "*$Proyecto*" } | Select-Object -First 1
+            if ($match) { $hallado = $match.FullName }
+        }
+    }
+
+    if ($hallado) { $Proyecto = $hallado }
     else { throw "No se encontró el proyecto: $Proyecto" }
 }
 
 $fcDir = Join-Path $Proyecto "02_filmcraft"
-$fcproj = Get-ChildItem -LiteralPath $fcDir -Filter "*.fcproj" -File | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+if (-not (Test-Path -LiteralPath $fcDir)) {
+    throw "La carpeta no tiene subdirectorio 02_filmcraft: $Proyecto"
+}
+
+# Ordenar por versión semántica _v(\d+)
+$candidatos = Get-ChildItem -LiteralPath $fcDir -Filter "*.fcproj" -File |
+    Where-Object { $_.DirectoryName -notmatch "Auto-Save" }
+
+$fcproj = $candidatos | Sort-Object {
+    if ($_.BaseName -match '_v(\d+)') { [int]$matches[1] } else { 0 }
+}, LastWriteTime -Descending | Select-Object -First 1
 
 if (-not $fcproj) {
     Write-Host "No hay ningún .fcproj todavía en $fcDir" -ForegroundColor Yellow
     exit 0
 }
 
-$Cli = "C:\Users\marx_\.gemini\antigravity\scratch\craft_tools\filmcraft\filmcraft-0.9.0-windows-x64-portable\filmcraft-cli.exe"
+# Cargar ruta dinámica de filmcraft-cli
+$configFile = Join-Path $PSScriptRoot "config.local.json"
+$Cli = ""
 $Port = 8765
+
+if (Test-Path $configFile) {
+    try {
+        $cfg = Get-Content $configFile -Raw | ConvertFrom-Json
+        if ($cfg.filmcraft_cli -and (Test-Path $cfg.filmcraft_cli)) { $Cli = $cfg.filmcraft_cli }
+        if ($cfg.port_bridge) { $Port = [int]$cfg.port_bridge }
+    } catch {}
+}
+
+if (-not $Cli -or -not (Test-Path $Cli)) {
+    $candCli = Join-Path $env:USERPROFILE ".gemini\antigravity\scratch\craft_tools\filmcraft\filmcraft-0.9.0-windows-x64-portable\filmcraft-cli.exe"
+    if (Test-Path $candCli) { $Cli = $candCli }
+}
+
 $TicksPerSec = 254016000000.0
 
 if (-not (Test-Path -LiteralPath $Cli)) {
-    throw "No existe filmcraft-cli.exe en: $Cli"
+    throw "No existe filmcraft-cli.exe en: $Cli. Ejecuta .\HERRAMIENTAS\setup-entorno.ps1"
 }
 
 $tcp = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
@@ -56,6 +98,7 @@ $durSec = [math]::Round($seqJson.duration / $TicksPerSec, 2)
 
 Write-Host "=== RESUMEN COMPACTO DE FILMCRAFT ($modo) ===" -ForegroundColor Cyan
 Write-Host "Proyecto:  $($projJson.name) | Sin guardar (dirty): $($projJson.dirty) | Rev: $($projJson.revision)" -ForegroundColor Green
+Write-Host "Archivo:   $($fcproj.Name)" -ForegroundColor Green
 Write-Host "Secuencia: [id=$($seqJson.id)] $($seqJson.name) | $($seqJson.settings.width)x$($seqJson.settings.height) @ $($seqJson.settings.frame_rate.num)fps | Duración: ${durSec}s ($($seqJson.durationFrames) frames)" -ForegroundColor Green
 
 Write-Host "`n--- Medios en Proyecto (Bins) ---" -ForegroundColor Yellow

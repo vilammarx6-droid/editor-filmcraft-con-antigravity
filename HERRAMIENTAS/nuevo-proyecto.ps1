@@ -8,8 +8,29 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$Root = "C:\Users\marx_\OneDrive\Documentos\Proyecto predeterminado\EditorVideo"
-$Cli  = "C:\Users\marx_\.gemini\antigravity\scratch\craft_tools\filmcraft\filmcraft-0.9.0-windows-x64-portable\filmcraft-cli.exe"
+# Rutas dinámicas portables
+$Root = (Resolve-Path "$PSScriptRoot\..").Path
+
+# Obtener binario de FilmCraft desde config.local.json o búsqueda dinámica
+$configFile = Join-Path $PSScriptRoot "config.local.json"
+$Cli = ""
+if (Test-Path $configFile) {
+    try {
+        $cfg = Get-Content $configFile -Raw | ConvertFrom-Json
+        if ($cfg.filmcraft_cli -and (Test-Path $cfg.filmcraft_cli)) {
+            $Cli = $cfg.filmcraft_cli
+        }
+    } catch {}
+}
+
+if (-not $Cli -or -not (Test-Path $Cli)) {
+    if ($env:FILMCRAFT_HOME -and (Test-Path (Join-Path $env:FILMCRAFT_HOME "filmcraft-cli.exe"))) {
+        $Cli = Join-Path $env:FILMCRAFT_HOME "filmcraft-cli.exe"
+    } else {
+        $cand = Join-Path $env:USERPROFILE ".gemini\antigravity\scratch\craft_tools\filmcraft\filmcraft-0.9.0-windows-x64-portable\filmcraft-cli.exe"
+        if (Test-Path $cand) { $Cli = $cand }
+    }
+}
 
 $Formatos = @{
   "vertical_1080"   = @{ W = 1080; H = 1920; FPS = 30; Nombre = "Vertical 1080p" }
@@ -51,18 +72,23 @@ foreach ($sub in $Subcarpetas) {
 }
 
 $f = $Formatos[$Formato]
-$brief = Get-Content (Join-Path $Root "_PLANTILLA\brief.md") -Raw
-$brief = $brief.Replace("{{NOMBRE}}", $Nombre)
-$brief = $brief.Replace("{{FECHA}}", $Fecha)
-$brief = $brief.Replace("{{FORMATO}}", $Formato)
-$brief = $brief.Replace("{{RESOLUCION}}", "$($f.W)x$($f.H)")
+$plantillaBrief = Join-Path $Root "_PLANTILLA\brief.md"
+if (Test-Path $plantillaBrief) {
+    $brief = Get-Content $plantillaBrief -Raw -Encoding UTF8
+    $brief = $brief.Replace("{{NOMBRE}}", $Nombre)
+    $brief = $brief.Replace("{{FECHA}}", $Fecha)
+    $brief = $brief.Replace("{{FORMATO}}", $Formato)
+    $brief = $brief.Replace("{{RESOLUCION}}", "$($f.W)x$($f.H)")
+} else {
+    $brief = "# Brief - $Nombre`n`n- Fecha: $Fecha`n- Formato: $Formato ($($f.W)x$($f.H))`n`n## Guion`n(Escribe aqui el guion para locucion)"
+}
 Set-Content -Path (Join-Path $Proyecto "00_brief\brief.md") -Value $brief -Encoding UTF8
 
 $log = "# Edit log - $Nombre`n`n- $Fecha - Proyecto creado ($Formato, $($f.W)x$($f.H))."
 Set-Content -Path (Join-Path $Proyecto "05_logs\edit-log.md") -Value $log -Encoding UTF8
 
 $Fcproj = Join-Path $Proyecto "02_filmcraft\$Slug`_v01.fcproj"
-if (Test-Path $Cli) {
+if ($Cli -and (Test-Path $Cli)) {
   & $Cli --save-as $Fcproj exec file.newProject name=$Slug | Out-Null
   if ($LASTEXITCODE -ne 0 -or -not (Test-Path $Fcproj)) {
     throw "FilmCraft no pudo crear el proyecto: $Fcproj"
@@ -72,11 +98,11 @@ if (Test-Path $Cli) {
     throw "FilmCraft no pudo crear la secuencia."
   }
 } else {
-  Write-Warning "No se encontro filmcraft-cli.exe. El proyecto se creo sin .fcproj."
+  Write-Warning "No se encontro filmcraft-cli.exe. Ejecuta .\HERRAMIENTAS\setup-entorno.ps1 para configurarlo."
 }
 
 Write-Host ""
-Write-Host "Proyecto creado:" -ForegroundColor Green
+Write-Host "Proyecto creado exitosamente:" -ForegroundColor Green
 Write-Host "  $Proyecto"
 Write-Host ""
 Write-Host "Brief:      $Proyecto\00_brief\brief.md"

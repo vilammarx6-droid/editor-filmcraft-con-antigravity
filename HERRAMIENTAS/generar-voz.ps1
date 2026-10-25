@@ -16,14 +16,25 @@ $ErrorActionPreference = "Stop"
 
 $workspaceRoot = Split-Path -Parent $PSScriptRoot
 
-# Resolver carpeta de proyecto
+# Resolver carpeta de proyecto de forma resiliente
 if (-not (Test-Path -LiteralPath $Proyecto)) {
-    $posible = Join-Path $workspaceRoot $Proyecto
-    if (Test-Path -LiteralPath $posible) {
-        $Proyecto = $posible
-    } else {
-        throw "No se encontró el proyecto en: $Proyecto"
+    $candidatos = @(
+        (Join-Path $workspaceRoot $Proyecto),
+        (Join-Path $workspaceRoot "PROYECTOS\$Proyecto")
+    )
+    $hallado = $candidatos | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+
+    if (-not $hallado) {
+        $proyectosDir = Join-Path $workspaceRoot "PROYECTOS"
+        if (Test-Path $proyectosDir) {
+            $match = Get-ChildItem -LiteralPath $proyectosDir -Directory |
+                Where-Object { $_.Name -like "*$Proyecto*" } | Select-Object -First 1
+            if ($match) { $hallado = $match.FullName }
+        }
     }
+
+    if ($hallado) { $Proyecto = $hallado }
+    else { throw "No se encontró el proyecto en: $Proyecto" }
 }
 
 $briefPath = Join-Path $Proyecto "00_brief\brief.md"
@@ -33,16 +44,31 @@ if (-not (Test-Path -LiteralPath $destAudio)) {
     New-Item -ItemType Directory -Path $destAudio -Force | Out-Null
 }
 
-# Si no se pasó texto, intentar extraerlo del brief
+# Si no se pasó texto, intentar extraerlo del brief con regex flexible de cuerpo
 if (-not $Texto -or $Texto.Trim() -eq "") {
     if (Test-Path -LiteralPath $briefPath) {
-        $briefContent = Get-Content -LiteralPath $briefPath -Raw
-        if ($briefContent -match "(?ms)## Guion\s*\r?\n(.*?)(?=\r?\n##|\Z)") {
-            $Texto = $matches[1].Trim()
+        $briefContent = Get-Content -LiteralPath $briefPath -Raw -Encoding UTF8
+        
+        # 1. Extraer sección de Guion o Locución hasta el siguiente encabezado H2 (## )
+        if ($briefContent -match '(?si)##\s*(?:Gui.*?n|Locuci.*?n)[^\r\n]*\r?\n([\s\S]+)') {
+            $cuerpo = $matches[1]
+            $partes = $cuerpo -split '(?m)^\s*##\s+'
+            $Texto = $partes[0].Trim()
         } elseif ($briefContent -match "(?m)^-\s*Guion:\s*(.+)$") {
             $Texto = $matches[1].Trim()
-        } elseif ($briefContent -match "(?ms)## Estructura\s*\r?\n(.*?)(?=\r?\n##|\Z)") {
-            $Texto = $matches[1].Trim()
+        } elseif ($briefContent -match '(?si)##\s*Estructura[^\r\n]*\r?\n([\s\S]+)') {
+            $cuerpo = $matches[1]
+            $partes = $cuerpo -split '(?m)^\s*##\s+'
+            $Texto = $partes[0].Trim()
+        }
+
+        # Limpiar notas de producción, encabezados H3 (### Escena...), viñetas y formato Markdown
+        if ($Texto) {
+            $Texto = $Texto -replace '(?s)<!--.*?-->', ''
+            $Texto = $Texto -replace '(?m)^\s*###[^\r\n]*', '' # remover títulos de escenas H3
+            $Texto = $Texto -replace '(?m)^\s*>\s*', ''        # remover quotes de markdown >
+            $Texto = $Texto -replace '[*_`~"]', ''             # remover marcas de estilo markdown
+            $Texto = $Texto.Trim()
         }
     }
 }

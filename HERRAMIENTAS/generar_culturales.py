@@ -3,7 +3,7 @@ import wave
 import subprocess
 import numpy as np
 
-CULTURAL_DIR = r"C:\Users\marx_\OneDrive\Documentos\Proyecto predeterminado\EditorVideo\RECURSOS_COMPARTIDOS\02_efectos_sonido\cultural_cusco_chumbivilcas"
+CULTURAL_DIR = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), "RECURSOS_COMPARTIDOS"\02_efectos_sonido\cultural_cusco_chumbivilcas"
 SR = 48000
 
 def slice_wakawaqra():

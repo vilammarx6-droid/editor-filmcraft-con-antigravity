@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "description": "Manifiesto estructurado de recursos y derechos de autor",
+  "resources": [
+    {
+      "file": "01_musica/incompetech/Monkeys_Spinning_Monkeys.mp3",
+      "title": "Monkeys Spinning Monkeys",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-3.0",
+      "attribution_required": true,
+      "source_url": "https://incompetech.com",
+      "commercial_use": true
+    },
+    {
+      "file": "01_musica/incompetech/Sneaky_Snitch.mp3",
+      "title": "Sneaky Snitch",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-3.0",
+      "attribution_required": true,
+      "source_url": "https://incompetech.com",
+      "commercial_use": true
+    },
+    {
+      "file": "01_musica/incompetech/Fluffing_a_Duck.mp3",
+      "title": "Fluffing a Duck",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-3.0",
+      "attribution_required": true,
+      "source_url": "https://incompetech.com",
+      "commercial_use": true
+    },
+    {
+      "file": "01_musica/incompetech/Scheming_Weasel.mp3",
+      "title": "Scheming Weasel (faster version)",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-3.0",
+      "attribution_required": true,
+      "source_url": "https://incompetech.com",
+      "commercial_use": true
+    },
+    {
+      "file": "01_musica/incompetech/No_Frills_Cumbia_Faster.mp3",
+      "title": "No Frills Cumbia Faster",
+      "author": "Kevin MacLeod",
+      "license": "CC-BY-3.0",
+      "attribution_required": true,
+      "source_url": "https://incompetech.com",
+      "commercial_use": true
+    },
+    {
+      "file": "02_efectos_sonido/cultural_cusco_chumbivilcas/wakawaqra_*.wav",
+      "title": "Toques Tradicionales de Wakawaqra (Takanakuy & Qorilazo)",
+      "author": "Tradición Cultural de Chumbivilcas / Grabaciones de Campo",
+      "license": "CC0-1.0",
+      "attribution_required": false,
+      "commercial_use": true
+    },
+    {
+      "file": "03_animaciones_y_graficos/marcos_y_camaras/*.png",
+      "title": "Overlays de Cámara, Guías REC y Cinemascope",
+      "author": "FilmCraft con Antigravity",
+      "license": "MIT",
+      "attribution_required": false,
+      "commercial_use": true
+    },
+    {
+      "file": "01_musica/memes_y_virales/*.mp3",
+      "title": "Clips Virales Comerciales de Redes Sociales (Meme Audio)",
+      "author": "Varios Artistas Comerciales",
+      "license": "Copyright-Protected / Fair-Use-Parody-Only",
+      "attribution_required": false,
+      "commercial_use": false,
+      "warning": "Grabaciones protegidas por derechos comerciales. Solo para pruebas internas o uso satírico. No comercial."
+    }
+  ]
+}

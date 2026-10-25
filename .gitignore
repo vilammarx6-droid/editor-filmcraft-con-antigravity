@@ -42,3 +42,14 @@ PROYECTOS/**/02_filmcraft/*.mp4
 # FilmCraft temporales / autosave
 *.fcproj.backup
 *.fcproj.tmp
+**/Auto-Save/
+**/02_filmcraft/Auto-Save/
+**/02_filmcraft/*.mp4
+
+# Configuraciones locales no versionadas
+HERRAMIENTAS/config.local.json
+.agents/mcp_config.json
+
+# Audio temporal sin comprimir de renderizado
+*.raw.wav
+

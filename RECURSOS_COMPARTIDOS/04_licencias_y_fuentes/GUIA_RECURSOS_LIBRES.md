@@ -1,6 +1,13 @@
-# Guía de Recursos Libres de Derechos y Herramientas para FilmCraft
+# Guía de Recursos, Licencias y Herramientas para FilmCraft
 
-Esta biblioteca central reúne medios, plantillas y herramientas para alimentar tus producciones de video en FilmCraft sin riesgo de reclamos de copyright (Content ID / Copyright Strike).
+Esta biblioteca central reúne medios, plantillas y herramientas para alimentar tus producciones de video en FilmCraft.
+
+> **IMPORTANTE SOBRE LICENCIAS Y DERECHOS DE AUTOR:**
+> Para garantizar la legalidad de tus videos en plataformas públicas (YouTube, TikTok, Instagram, etc.), consulta siempre el manifiesto estructurado [LICENSES.json](file:///C:/Users/marx_/OneDrive/Documentos/Proyecto%20predeterminado/EditorVideo/RECURSOS_COMPARTIDOS/LICENSES.json) y el archivo de atribuciones obligatorias [CREDITS.md](file:///C:/Users/marx_/OneDrive/Documentos/Proyecto%20predeterminado/EditorVideo/CREDITS.md).
+>
+> - **Pistas Creative Commons (Kevin MacLeod / Incompetech):** Libres para uso comercial siempre que incluyas el texto de atribución obligatorio de [CREDITS.md](file:///C:/Users/marx_/OneDrive/Documentos/Proyecto%20predeterminado/EditorVideo/CREDITS.md) en la descripción del video.
+> - **Patrimonio Cultural Andino (Cusco / Chumbivilcas):** Grabaciones de campo bajo dominio público (CC0).
+> - **Audios de Memes Comerciales (`01_musica/memes_y_virales/`):** Son grabaciones comerciales sujetas a copyright de terceros. Se incluyen únicamente para maquetación preliminar y parodia local. **Pueden recibir reclamos de Content ID si se publican en internet.** Para videos comerciales, utiliza las pistas libres de Incompetech.
 
 ---
 

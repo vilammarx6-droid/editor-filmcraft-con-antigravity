@@ -93,12 +93,14 @@ editor-filmcraft-con-antigravity/
 │   ├── 03_animaciones_y_graficos/     # Viñetas, marcos REC, pantalla_verde/ y stickers
 │   └── 04_licencias_y_fuentes/        # Fuentes Bebas Neue, Anton, Montserrat, Inter + guía
 ├── _PLANTILLA/                        # Plantilla de carpetas para nuevos proyectos
+├── CREDITS.md                         # Atribuciones legales obligatorias (CC-BY Kevin MacLeod, CC0)
 └── PROYECTOS/                         # Videos producidos organizados por fecha y slug
     ├── 2026-10-23_prueba-estructura/
     ├── 2026-10-23_tecnologia-chumbivilcas/
     ├── 2026-10-24_cultura-60s/
     ├── 2026-10-24_tecnologia/
-    └── 2026-10-24_cumbia-sombras-3m/
+    ├── 2026-10-24_cumbia-sombras-3m/
+    └── 2026-10-24_mediflow-demo/
 ```
 
 ---
@@ -109,13 +111,17 @@ Todos los scripts se encuentran en la carpeta [`HERRAMIENTAS/`](HERRAMIENTAS/):
 
 | Script | Lenguaje | Descripción | Ejemplo de Uso |
 | :--- | :--- | :--- | :--- |
-| `abrir-filmcraft.ps1` | PowerShell | Lanza FilmCraft con `--control 8765` para permitir la conexión en vivo del MCP. | `.\HERRAMIENTAS\abrir-filmcraft.ps1 -Proyecto "PROYECTOS\2026-10-24_cultura-60s"` |
-| `nuevo-proyecto.ps1` | PowerShell | Crea la estructura de carpetas (`00_brief` a `05_notas`) con su `brief.md` base. | `.\HERRAMIENTAS\nuevo-proyecto.ps1 -Nombre "Historia Andina" -Formato vertical_720` |
-| `generar-voz.ps1` | PowerShell | Sintetiza voz neural con `edge-tts`, genera `.srt` y convierte a WAV 48kHz estéreo. | `.\HERRAMIENTAS\generar-voz.ps1 -Texto "Hola mundo" -Voz "es-PE-AlexNeural" -Salida "audio.wav"` |
+| `setup-entorno.ps1` | PowerShell | Resuelve rutas dinámicas, configura el MCP dinámico y valida dependencias locales. | `.\HERRAMIENTAS\setup-entorno.ps1` |
+| `abrir-filmcraft.ps1` | PowerShell | Lanza FilmCraft con `--control 8765`, ordenando por versión `_vNN` y cierre seguro. | `.\HERRAMIENTAS\abrir-filmcraft.ps1 -Proyecto "mediflow"` |
+| `nuevo-proyecto.ps1` | PowerShell | Crea la estructura (`00_brief` a `05_logs`) con su `brief.md` base y sección `## Guion`. | `.\HERRAMIENTAS\nuevo-proyecto.ps1 -Nombre "Historia Andina" -Formato vertical_720` |
+| `generar-voz.ps1` | PowerShell | Extrae el guion del brief con regex flexible, genera TTS con Edge-TTS, `.srt` y WAV 48kHz. | `.\HERRAMIENTAS\generar-voz.ps1 -Proyecto "cultura-60s" -NombreSalida "locucion"` |
+| `auditar-calidad.py` | Python (FFmpeg) | Quality Gate: Valida sonoridad EBU R128 (-14 LUFS, True Peak <= -1.0 dBTP; exit 1 si falla). | `python .\HERRAMIENTAS\auditar-calidad.py "ruta\video.mp4"` |
+| `remediar-audio.py` | Python (FFmpeg) | Remasteriza y normaliza el audio a -14 LUFS y True Peak <= -1.0 dBTP en 2 pases. | `python .\HERRAMIENTAS\remediar-audio.py "ruta\video.mp4"` |
 | `recortar-silencios.ps1` | PowerShell | Usa `auto-editor` para eliminar pausas vacías de videos crudos. | `.\HERRAMIENTAS\recortar-silencios.ps1 -Video "entrada.mp4" -Salida "recortado.mp4"` |
 | `importar-recurso.ps1` | PowerShell | Copia recursos de la biblioteca compartida a `01_fuentes/` con filtro por nombre. | `.\HERRAMIENTAS\importar-recurso.ps1 -Proyecto "..." -Tipo cultural -Filtro "*wakawaqra*"` |
-| `crear-collage-qa.py` | Python (PIL) | Genera `04_previews/collage_qc.png` uniendo 4 capturas en cuadrícula en 0.02s. | `python .\HERRAMIENTAS\crear-collage-qa.py "PROYECTOS\2026-10-24_cultura-60s"` |
-| `resumir-timeline.ps1` | PowerShell | Lee el estado en memoria de FilmCraft y devuelve un resumen compacto con IDs de clip. | `.\HERRAMIENTAS\resumir-timeline.ps1 -Proyecto "PROYECTOS\2026-10-24_cultura-60s"` |
+| `crear-collage-qa.py` | Python (PIL) | Genera `04_previews/collage_qc.png` usando fotogramas deterministas (`qa_01` a `qa_04`). | `python .\HERRAMIENTAS\crear-collage-qa.py "cultura-60s"` |
+| `resumir-timeline.ps1` | PowerShell | Lee el estado en memoria de FilmCraft y devuelve un resumen compacto con IDs de clip. | `.\HERRAMIENTAS\resumir-timeline.ps1 -Proyecto "mediflow"` |
+
 
 ---
 

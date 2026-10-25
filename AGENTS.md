@@ -68,25 +68,29 @@ EditorVideo/
 │   ├── generar-voz.ps1              # Crea voz neural Edge-TTS (WAV 48kHz + .srt)
 │   ├── recortar-silencios.ps1       # Limpia silencios automáticamente con auto-editor
 │   ├── importar-recurso.ps1         # Copia música, SFX, culturales o memes con -Filtro
-│   ├── crear-collage-qa.py          # Une capturas en cuadrícula 2x2 (04_previews/collage_qc.png)
+│   ├── crear-collage-qa.py          # Une capturas en cuadrícula 2x2 determinista (04_previews/collage_qc.png)
+│   ├── auditar-calidad.py           # Quality Gate con EBU R128 (-14 LUFS, True Peak <= -1.0 dBTP, exit 1 si falla)
+│   ├── remediar-audio.py            # Normalización y remasterización a -14 LUFS / -1 dBTP
+│   ├── setup-entorno.ps1            # Inicialización portable de rutas y MCP dinámico
 │   └── resumir-timeline.ps1         # Resume el estado de FilmCraft sin gastar tokens
-├── PLANTILLAS/                      # Plantilla base de proyecto
+├── _PLANTILLA/                      # Plantilla base de proyecto (brief.md con sección ## Guion)
+├── CREDITS.md                       # Atribuciones formales de licencias (CC-BY Kevin MacLeod, CC0)
 ├── RECURSOS_COMPARTIDOS/            # Biblioteca libre lista para producción (98+ activos)
-│   ├── 01_musica/                   # Lofi, Documental, Acústica + carpeta memes_y_virales/
+│   ├── LICENSES.json                # Manifiesto estructurado de derechos y fuentes
+│   ├── 01_musica/                   # Pistas libres CC-BY Incompetech + subcarpeta memes_y_virales/
 │   ├── 02_efectos_sonido/           # Transiciones, impactos + cultural_cusco_chumbivilcas/ + memes_y_virales/
 │   ├── 03_animaciones_y_graficos/   # Overlays, stickers_y_memes/, marcos_y_camaras/, pantalla_verde/
 │   └── 04_licencias_y_fuentes/      # Fuentes TTF (Bebas Neue, Anton, Montserrat, Inter) + guía
-├── PROYECTOS/                       # Un subdirectorio por cada video
-└── ARCHIVO/                         # Proyectos terminados o antiguos
+└── PROYECTOS/                       # Un subdirectorio por cada video
 ```
 
 ### Estructura Interna de Cada Proyecto (`PROYECTOS/AAAA-MM-DD_slug/`)
-- `00_brief/brief.md` — Objetivo, formato, guion y tabla de tiempos.
-- `01_fuentes/` — `video/`, `audio/`, `musica/`, `graficos/`, `subtitulos/` (NUNCA borrar originales).
+- `00_brief/brief.md` — Objetivo, formato, guion (sección `## Guion`) y tabla de tiempos.
+- `01_fuentes/` — `video/`, `audio/`, `musica/`, `graficos/` (NUNCA borrar originales).
 - `02_filmcraft/` — Proyectos `.fcproj` versionados (`slug_v01.fcproj`, `slug_v02.fcproj`).
 - `03_exports/` — Videos finales `.mp4` (`slug_v01_formato.mp4`).
-- `04_previews/` — Capturas de revisión y `collage_qc.png`.
-- `05_notas/cambios.md` — Bitácora corta de versiones.
+- `04_previews/` — Capturas de revisión (`qa_01_*` a `qa_04_*`) y `collage_qc.png`.
+- `05_logs/edit-log.md` — Bitácora técnica y registro de auditoría de los agentes.
 
 ---
 

@@ -2,7 +2,7 @@ import os
 import wave
 import numpy as np
 
-OUTPUT_DIR = r"C:\Users\marx_\OneDrive\Documentos\Proyecto predeterminado\EditorVideo\RECURSOS_COMPARTIDOS\02_efectos_sonido"
+OUTPUT_DIR = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), "RECURSOS_COMPARTIDOS"\02_efectos_sonido"
 SR = 48000  # 48 kHz standard for FilmCraft
 
 def save_wav(filename, data_stereo):
