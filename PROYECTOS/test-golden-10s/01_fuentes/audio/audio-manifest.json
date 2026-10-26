@@ -1,0 +1,13 @@
+{
+  "status": "ok",
+  "engine": "SoundCraft CLI 0.13.1",
+  "input_file": "locucion.wav",
+  "output_file": "locucion_sc_master.wav",
+  "output_path": "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\PROYECTOS\\test-golden-10s\\01_fuentes\\audio\\locucion_sc_master.wav",
+  "sample_rate": 48000,
+  "channels": 2,
+  "seconds": 7.416,
+  "sample_format": "Int24",
+  "size_bytes": 2135912,
+  "sha256": "CC4FD5D9875DD0829261CBF54323A6A9ED9CB32DFC0658289A07179540A29EA6"
+}

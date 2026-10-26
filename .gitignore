@@ -31,12 +31,10 @@ tmp/
 *.tmp
 *.log
 
-# Exportaciones pesadas de video (GitHub bloquea archivos > 100MB)
+# Exportaciones pesadas de video y miniaturas (GitHub bloquea archivos > 100MB)
 # Se conservan los archivos .gitkeep para mantener la estructura
-PROYECTOS/**/03_exports/*.mp4
-PROYECTOS/**/03_exports/*.mov
-PROYECTOS/**/03_exports/*.mkv
-PROYECTOS/**/03_exports/*.avi
+PROYECTOS/**/03_exports/*
+!PROYECTOS/**/03_exports/.gitkeep
 PROYECTOS/**/02_filmcraft/*.mp4
 
 # Videos y audios pesados generados de trabajo en demos (>50MB)
@@ -57,4 +55,3 @@ HERRAMIENTAS/config.local.json
 
 # Audio temporal sin comprimir de renderizado
 *.raw.wav
-

@@ -161,13 +161,14 @@ def create_thumbnail(project_dir, title=None, subtitle=None, hero_image=None, as
         sub_y = pos_y + int(font_size * 1.1)
         draw.text((margin_x, sub_y), subtitle.upper(), font=sub_font, fill=(255, 255, 255), stroke_width=stroke_w // 2, stroke_fill=(0, 0, 0))
 
-    # Guardar imagen temporal
+    # Guardar imagen temporal con ruta absoluta
     if not output_file:
         exports_dir = os.path.join(project_dir, "03_exports")
         os.makedirs(exports_dir, exist_ok=True)
         output_file = os.path.join(exports_dir, "thumbnail.jpg")
 
-    temp_png = output_file + ".raw.png"
+    output_file = os.path.abspath(output_file)
+    temp_png = os.path.abspath(output_file + ".raw.png")
     base_img.convert("RGB").save(temp_png, "PNG")
 
     # Optimizar y convertir con PhotoCraft CLI
