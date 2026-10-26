@@ -23,11 +23,11 @@
                           "sha256":  "2DB6471604EBC940129CCB62A7BFCF7E4FFF9470A71C79A713C41D0A0AB37B2D"
                       },
                       {
-                          "size_bytes":  515703,
+                          "size_bytes":  994779,
                           "rel_path":  "04_previews\\collage_qc.png",
                           "file":  "collage_qc.png",
-                          "modified":  "2026-10-26T17:34:00Z",
-                          "sha256":  "4B7FE2A318A0E74720121EFFF4A74B7C00B52DB2135A81410BB35549CC4311C5"
+                          "modified":  "2026-10-26T17:58:37Z",
+                          "sha256":  "9EC210A8A33D213678DE0CEBAF1E0E08EBF1714044DDC415631098029A30A2D6"
                       },
                       {
                           "size_bytes":  967,
@@ -37,11 +37,32 @@
                           "sha256":  "A4FAE68DD6E9CDC8585D7B7F6F9B6F9A2ACCE8B627F17F45C42602918A2532A9"
                       },
                       {
-                          "size_bytes":  967,
+                          "size_bytes":  986,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\render-manifest-diseno_educacion.json",
+                          "file":  "render-manifest-diseno_educacion.json",
+                          "modified":  "2026-10-26T17:56:05Z",
+                          "sha256":  "BA45A51677818ABFEC3B3C25AF69BCD5D6BE38A5428F3F3722F042CFD1229233"
+                      },
+                      {
+                          "size_bytes":  974,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\render-manifest-diseno_intro.json",
+                          "file":  "render-manifest-diseno_intro.json",
+                          "modified":  "2026-10-26T17:55:59Z",
+                          "sha256":  "D32BC5590998A3AC3A96BB5189A12DD38661A7AFD358E69E8BC1D1BCDEF11F63"
+                      },
+                      {
+                          "size_bytes":  988,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\render-manifest-diseno_satelital.json",
+                          "file":  "render-manifest-diseno_satelital.json",
+                          "modified":  "2026-10-26T17:56:02Z",
+                          "sha256":  "42F30E86611B48996B6A0F7E098C78528B67C95ED227FFBE6ACB3F03B2EECB70"
+                      },
+                      {
+                          "size_bytes":  986,
                           "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\render-manifest.json",
                           "file":  "render-manifest.json",
-                          "modified":  "2026-10-26T17:30:19Z",
-                          "sha256":  "A4FAE68DD6E9CDC8585D7B7F6F9B6F9A2ACCE8B627F17F45C42602918A2532A9"
+                          "modified":  "2026-10-26T17:56:05Z",
+                          "sha256":  "BA45A51677818ABFEC3B3C25AF69BCD5D6BE38A5428F3F3722F042CFD1229233"
                       },
                       {
                           "size_bytes":  618,
@@ -51,6 +72,48 @@
                           "sha256":  "A746D3299B8188C7C94B04337622E55109DD47EF6F7DA3C5DC0A9105D56D9E8C"
                       },
                       {
+                          "size_bytes":  643,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\diseno_educacion.json",
+                          "file":  "diseno_educacion.json",
+                          "modified":  "2026-10-26T17:56:02Z",
+                          "sha256":  "02D7155A5C5B3C42A6F15F7B7327C1D8F541223FA508562F43290A637FB7560B"
+                      },
+                      {
+                          "size_bytes":  639,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\diseno_intro.json",
+                          "file":  "diseno_intro.json",
+                          "modified":  "2026-10-26T17:55:56Z",
+                          "sha256":  "1BAA291511AF1283BEE17E33F9EB647DED0CD510D67FB73C84F2F4E47C9AC035"
+                      },
+                      {
+                          "size_bytes":  645,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\diseno_satelital.json",
+                          "file":  "diseno_satelital.json",
+                          "modified":  "2026-10-26T17:55:59Z",
+                          "sha256":  "317049726E6A94E7DD7953F348C20ADFF5B6DE0908C03A3378A15110837AD124"
+                      },
+                      {
+                          "size_bytes":  12690283,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\overlay_01_intro.mov",
+                          "file":  "overlay_01_intro.mov",
+                          "modified":  "2026-10-26T17:55:59Z",
+                          "sha256":  "E34B701DE467DBFE6E34128605905081ABA88CEF603C8DDC4E431011E9623F02"
+                      },
+                      {
+                          "size_bytes":  11036896,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\overlay_02_satelital.mov",
+                          "file":  "overlay_02_satelital.mov",
+                          "modified":  "2026-10-26T17:56:02Z",
+                          "sha256":  "9F1204BC6EAA2C0CE56DCFA0D987404EF9043536E64939D30BB75BB2B5CE9359"
+                      },
+                      {
+                          "size_bytes":  12020260,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\overlay_03_educacion.mov",
+                          "file":  "overlay_03_educacion.mov",
+                          "modified":  "2026-10-26T17:56:05Z",
+                          "sha256":  "0A33F5313349CF433043E48CDC4991A93DE2FEB4B21969EF1051BDAC60BED252"
+                      },
+                      {
                           "size_bytes":  12819100,
                           "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\overlay_titulo.mov",
                           "file":  "overlay_titulo.mov",
@@ -58,26 +121,54 @@
                           "sha256":  "AB92D4CFDCB42A49C7B87EFE03A3349B82C68C8652C9880060D6D1848816050C"
                       },
                       {
-                          "size_bytes":  11204745,
-                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\03_exports\\accesibilidad-rural_v01_vertical_720.mp4",
-                          "file":  "accesibilidad-rural_v01_vertical_720.mp4",
-                          "modified":  "2026-10-26T17:32:49Z",
-                          "sha256":  "E97C5D7774E172223FDA71DAEA2A2C5546DFB60547DAAE7CD9BFCAB18872A6B6"
+                          "size_bytes":  517,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\audio\\audio-manifest.json",
+                          "file":  "audio-manifest.json",
+                          "modified":  "2026-10-26T17:26:41Z",
+                          "sha256":  "C450398B8048E9CC0F1247BC225E9F6C7333F7E11D12550E0AA1952C20F2A807"
                       },
                       {
-                          "size_bytes":  14506,
+                          "size_bytes":  19263848,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\audio\\locucion_master.wav",
+                          "file":  "locucion_master.wav",
+                          "modified":  "2026-10-26T17:26:41Z",
+                          "sha256":  "D8F714553F672BABC56F0E009F3B844084D348071B3A2F2CB31E9CD5B1864152"
+                      },
+                      {
+                          "size_bytes":  430,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\03_exports\\thumbnail-manifest.json",
+                          "file":  "thumbnail-manifest.json",
+                          "modified":  "2026-10-26T17:56:20Z",
+                          "sha256":  "8F88EAF36E2173BBCCBFCD1904B02A4DE6A2E16B1008C13DA8BEF4D5442C187D"
+                      },
+                      {
+                          "size_bytes":  573483,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\03_exports\\thumbnail.jpg",
+                          "file":  "thumbnail.jpg",
+                          "modified":  "2026-10-26T17:56:20Z",
+                          "sha256":  "718DE48866F0B331C6CDCA0EB989BFD7CC1ABFA8CAAF5C4ACDFCC15734A0939E"
+                      },
+                      {
+                          "size_bytes":  23346656,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\03_exports\\accesibilidad-rural_v01_vertical_720.mp4",
+                          "file":  "accesibilidad-rural_v01_vertical_720.mp4",
+                          "modified":  "2026-10-26T17:56:19Z",
+                          "sha256":  "416693DAEDC0AC43F30CD4D2A3194B1504D0319E3A187824194E06D48FFAA54D"
+                      },
+                      {
+                          "size_bytes":  27199,
                           "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\02_filmcraft\\accesibilidad-rural_v01.fcproj",
                           "file":  "accesibilidad-rural_v01.fcproj",
-                          "modified":  "2026-10-26T17:32:39Z",
-                          "sha256":  "D00CABD7E2C545ACBAC881A2E9725D71174ACD3913D83303CCF2EDB4154DD7F9"
+                          "modified":  "2026-10-26T17:56:06Z",
+                          "sha256":  "1EBC6F80114F3C2796B472F8325DD3A61E4ECCDF742C9E7B1F4FDED8649E5DB2"
                       }
                   ],
     "pipeline_status":  "SUCCESS",
     "project":  "2026-10-26_accesibilidad-rural",
-    "artifacts_count":  10,
-    "session_id":  "93172ea2-00ad-4f80-9909-798594264c58",
+    "artifacts_count":  23,
+    "session_id":  "0d946112-6d57-4269-bcc4-29f5252bf1c3",
     "target_video":  "accesibilidad-rural_v01_vertical_720.mp4",
-    "timestamp_utc":  "2026-10-26T17:34:01Z",
+    "timestamp_utc":  "2026-10-26T17:58:39Z",
     "exit_code":  0,
     "quality_gate":  "PASSED"
 }
