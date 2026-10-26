@@ -1,7 +1,7 @@
 # Guía de Agentes y Espacio de Trabajo para FilmCraft (`EditorVideo`)
 
 Este archivo es la instrucción principal para cualquier agente, subagente o script que trabaje dentro de este repositorio.
-Todo el trabajo de edición se organiza **por proyecto** y es operado mediante la **Arquitectura Híbrida Verificable**: orquestación cognitiva en Antigravity con subagentes especializados, contratos JSON estrictos y motores de renderizado deterministas (FilmCraft CLI + EffectCraft CLI 0.11.1).
+Todo el trabajo de edición se organiza **por proyecto** y es operado mediante la **Arquitectura Híbrida Verificable**: orquestación cognitiva en Antigravity con subagentes especializados, contratos JSON estrictos y los 4 motores deterministas de la suite Craft: **FilmCraft CLI** (NLE), **EffectCraft CLI** (Motion Graphics), **PhotoCraft CLI** (Miniaturas) y **SoundCraft CLI** (Audio y Mastering).
 
 ---
 
@@ -16,47 +16,43 @@ Para evitar alucinaciones, reportes prematuros y pérdidas de tiempo, el sistema
                          [02. EL GUIONISTA] (flash_lite)
                          (Escribe 00_brief/brief.md con ## Guion)
                                   │
-              ┌───────────────────┴───────────────────┐
+              ┌───────────────────┼───────────────────┐
               │ Contratos y Pautas en Paralelo        │
-              ▼                                       ▼
-     [03. EL SONIDISTA] (flash_lite)       [04. EL DISEÑADOR VISUAL] (flash_lite)
-   (Pauta de locución, WAV 48kHz,         (Emite contrato diseno.json
-    subtítulos .srt, música y SFX)          validado para EffectCraft)
-              │                                       │
-              ▼                                       ▼
-    [Edge-TTS + FFmpeg]                    [EffectCraft CLI 0.11.1]
-   (Genera locucion.wav 48kHz             (ec_render.py genera ProRes 4444 RGBA
-    y locucion.srt sincronizado)           y render-manifest.json con SHA-256)
-              │                                       │
-              └───────────────────┬───────────────────┘
-                                  │ Ingesta y Montaje Físico
-                                  ▼
-                        [05. EL MONTAJISTA] (flash / CLI)
-                  (Monta timeline nativo en FilmCraft CLI / MCP
-                   en pistas V1, V2, V3, A1, A2, A3; guarda .fcproj)
-                                  │
-                                  ▼
-                        [06. EL AUDITOR QA] (flash visión)
-                  (Inspecciona collage 2x2 determinista)
-                                  │
-                                  ▼
-                  [QUALITY GATE ESTRICTO (auditar-calidad.py)]
-                  - Sonoridad EBU R128: [-16, -13] LUFS (Hard Fail si fuera)
-                  - True Peak: <= -1.0 dBTP (Hard Fail si supera)
-                  - Duración y sample rate: 48000 Hz estéreo
-                                  │
-                                  ▼
-                    [LIBRO MAYOR CRIPTOGRÁFICO (run.json)]
-                  (Registra SHA-256 inmutable de los 8 artefactos)
+              ▼                   ▼                   ▼
+     [03. EL SONIDISTA]  [04. DISEÑADOR VISUAL] [07. DISEÑADOR MINIATURAS]
+      (SoundCraft CLI +   (EffectCraft CLI       (PhotoCraft CLI 0.16.0
+       Edge-TTS + FFmpeg)  ProRes 4444 RGBA)      thumbnail.jpg + manifest)
+              │                   │                   │
+              └───────────────────┴─────────┬─────────┘
+                                            │ Ingesta, Miniatura y Montaje
+                                            ▼
+                                  [05. EL MONTAJISTA] (flash / CLI)
+                            (Monta timeline nativo en FilmCraft CLI / MCP
+                             en pistas V1, V2, V3, A1, A2, A3; guarda .fcproj)
+                                            │
+                                            ▼
+                                  [06. EL AUDITOR QA] (flash visión)
+                            (Inspecciona collage 2x2 determinista)
+                                            │
+                                            ▼
+                            [QUALITY GATE ESTRICTO (auditar-calidad.py)]
+                            - Sonoridad EBU R128: [-16, -13] LUFS (Hard Fail)
+                            - True Peak: <= -1.0 dBTP (Hard Fail si supera)
+                            - Duración y sample rate: 48000 Hz estéreo
+                                            │
+                                            ▼
+                              [LIBRO MAYOR CRIPTOGRÁFICO (run.json)]
+                            (Registra SHA-256 inmutable de los artefactos)
 ```
 
 ### Definiciones de Subagentes en `.agents/`
 1. `.agents/01_director.md` — Orquestación, validación del pedido, gestión de dependencias y auditoría del ledger `run.json`.
 2. `.agents/02_guionista.md` — Estructura narrativa en `00_brief/brief.md` con gancho y tabla de tiempos (`flash_lite`).
-3. `.agents/03_sonidista.md` — Locución `edge-tts` (WAV 48kHz + `.srt`), música y SFX (`flash_lite`).
-4. `.agents/04_disenador_visual.md` — Contrato `diseno.json` para EffectCraft CLI 0.11.1 con ProRes RGBA y canal alfa (`flash_lite`).
-5. `.agents/05_montajista.md` — Importación y despacho de clips al timeline de FilmCraft (`flash` o headless CLI).
+3. `.agents/03_sonidista.md` — Locución `edge-tts` (WAV 48kHz + `.srt`), procesamiento de stems en **SoundCraft CLI** y SFX (`flash_lite`).
+4. `.agents/04_disenador_visual.md` — Contrato `diseno.json` para **EffectCraft CLI 0.11.1** con ProRes RGBA y canal alfa (`flash_lite`).
+5. `.agents/05_montajista.md` — Importación y despacho de clips al timeline de **FilmCraft CLI** (`flash` o headless CLI).
 6. `.agents/06_auditor_qa.md` — Auditoría visual sobre `04_previews/collage_qc.png` (`flash`).
+7. `.agents/07_disenador_miniaturas.md` — Generación de portadas y miniaturas con **PhotoCraft CLI 0.16.0** (`flash_lite`).
 
 ---
 

@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "status": "ok",
+  "effectcraft_version": "effectcraft-cli 0.11.1",
+  "timestamp_utc": "2026-10-26T17:55:59.823420+00:00",
+  "design_file": "diseno_intro.json",
+  "template_name": "Lower Third",
+  "comp_name": "Lower Third",
+  "output_file": "overlay_01_intro.mov",
+  "output_path": "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\PROYECTOS\\2026-10-26_accesibilidad-rural\\01_fuentes\\graficos\\overlay_01_intro.mov",
+  "sha256": "E34B701DE467DBFE6E34128605905081ABA88CEF603C8DDC4E431011E9623F02",
+  "size_bytes": 12690283,
+  "format": "prores",
+  "channels": "rgba",
+  "dimensions": [
+    1920,
+    1080
+  ],
+  "duration_sec": 3.0,
+  "frames_count": 90,
+  "has_alpha": true,
+  "pix_fmt": "yuva444p12le",
+  "values_applied": {
+    "Name": "ACCESIBILIDAD RURAL",
+    "Title": "El reto de los 4,000 msnm",
+    "Bar Color": [
+      0.0,
+      0.75,
+      1.0,
+      1.0
+    ]
+  }
+}

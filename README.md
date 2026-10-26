@@ -1,15 +1,17 @@
-# 🎬 EditorVideo: Sistema de Producción de Video Automatizado con FilmCraft + EffectCraft + Google Antigravity
+# 🎬 EditorVideo: Sistema de Producción de Video Automatizado con Suite Craft + Google Antigravity
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Engine: FilmCraft 0.9.0](https://img.shields.io/badge/Engine-FilmCraft%200.9.0-6C5CE7.svg)](https://filmcraft.app)
+[![Engine: FilmCraft 0.9.0](https://img.shields.io/badge/NLE-FilmCraft%200.9.0-6C5CE7.svg)](https://filmcraft.app)
 [![Motion: EffectCraft 0.11.1](https://img.shields.io/badge/Motion-EffectCraft%200.11.1-FFA502.svg)](https://filmcraft.app)
+[![Photo: PhotoCraft 0.16.0](https://img.shields.io/badge/Photo-PhotoCraft%200.16.0-0984E3.svg)](https://github.com/storytold/photocraft)
+[![DAW: SoundCraft 0.13.1](https://img.shields.io/badge/DAW-SoundCraft%200.13.1-00CEC9.svg)](https://github.com/storytold/soundcraft)
 [![Architecture: Hybrid Verified Engine](https://img.shields.io/badge/Architecture-Hybrid%20Engine%20(CLI%20%2B%20Agents)-00B894.svg)](#arquitectura-híbrida-verificable-3-capas)
 [![Quality Gate: EBU R128 Strict](https://img.shields.io/badge/Quality%20Gate-EBU%20R128%20Strict-2ED573.svg)](#quality-gate-estricto-ebu-r128)
 [![Platform: Windows](https://img.shields.io/badge/Platform-Windows%20x64-blue.svg)](#requisitos-y-configuración)
 
-Sistema profesional y 100% de código abierto para la **planificación, generación de medios, motion graphics, edición no lineal multitrack y control de calidad criptográfico de video**. 
+Sistema profesional y 100% de código abierto para la **planificación, generación de medios, motion graphics, edición no lineal multitrack, masterización de audio y control de calidad criptográfico de video**. 
 
-A diferencia de simulaciones puramente conversacionales, **EditorVideo** implementa una **Arquitectura Híbrida Verificable**: combina el razonamiento estratégico de **Google Antigravity** y subagentes especializados con la solidez determinista de **FilmCraft CLI**, **EffectCraft CLI 0.11.1**, **FFmpeg** y un **Quality Gate con bloqueo estricto** que valida sonoridad EBU R128 y registra hashes SHA-256 inmutables de cada artefacto en `05_logs/run.json`.
+A diferencia de simulaciones puramente conversacionales, **EditorVideo** implementa una **Arquitectura Híbrida Verificable**: combina el razonamiento estratégico de **Google Antigravity** y subagentes especializados con la solidez determinista de la suite **ArtCraft (FilmCraft CLI, EffectCraft CLI, PhotoCraft CLI, SoundCraft CLI)**, **FFmpeg** y un **Quality Gate con bloqueo estricto** que valida sonoridad EBU R128 y registra hashes SHA-256 inmutables de cada artefacto en `05_logs/run.json`.
 
 Todo se ejecuta **localmente en una sola PC**, sin costos recurrentes por API, con resolución dinámica de rutas y listo para clonarse y verificarse en cualquier máquina Windows.
 
@@ -17,11 +19,13 @@ Todo se ejecuta **localmente en una sola PC**, sin costos recurrentes por API, c
 
 ## 🚀 Características Principales
 
-- ⚡ **Arquitectura Híbrida Verificable:** Orquestación cognitiva con contratos formales (`diseno.json`, `render-manifest.json`, `run.json`) y ejecución determinista por CLI.
+- ⚡ **Arquitectura Híbrida Verificable:** Orquestación cognitiva con contratos formales (`diseno.json`, `render-manifest.json`, `thumbnail-manifest.json`, `run.json`) y ejecución determinista por CLI.
 - 🎨 **Integración Nativa con EffectCraft CLI 0.11.1:** Renderizado de plantillas de movimiento (`.ectemplate`) en **Apple ProRes 4444 RGBA** con canal alfa verificado (`yuva444p12le`) y fotogramas transparentes PNG.
+- 🖼️ **Diseño de Miniaturas con PhotoCraft CLI 0.16.0:** Generación automatizada de portadas y miniaturas de alto CTR para YouTube/Shorts/TikTok con tipografías de cine y manifiesto SHA-256.
+- 🎚️ **Masterización de Audio con SoundCraft CLI 0.13.1:** Análisis espectral, remuestreo determinista a 48000 Hz estéreo y normalización profesional de stems.
 - 🎛️ **Líneas de Tiempo Multitrack Reales en FilmCraft:** Montaje no lineal programático (`V1`, `V2`, `V3`, `A1`, `A2`, `A3`) en proyectos nativos `.fcproj` vía comandos de lote (`command_batch`) o FilmCraft CLI headless.
 - 🛡️ **Quality Gate Estricto EBU R128:** El exportador y el pipeline exigen sonoridad integrada en `[-16.0, -13.0] LUFS` y pico verdadero $\le -1.0$ dBTP; cualquier desviación o clipping aborta con `exit 1`.
-- 🔐 **Auditoría Criptográfica Inmutable (`run.json`):** Cada ejecución registra los SHA-256, tamaños de archivo y fecha de modificación de cada activo (brief, locución, SRT, manifest de EffectCraft, timeline `.fcproj`, collage QA y video master).
+- 🔐 **Auditoría Criptográfica Inmutable (`run.json`):** Cada ejecución registra los SHA-256, tamaños de archivo y fecha de modificación de cada activo (brief, locución, SRT, manifest de EffectCraft, miniatura PhotoCraft, timeline `.fcproj`, collage QA y video master).
 - 🎙️ **Locución Neural y Subtítulos Sincronizados:** Voces ultra-realistas con Microsoft Edge-TTS convertidas automáticamente a **WAV 48 kHz estéreo** con exportación de archivos `.srt`.
 - ✂️ **Recorte Inteligente de Silencios:** Limpieza automática de pausas y tiempos muertos en videos crudos utilizando `auto-editor`.
 - 🔍 **Auditoría Visual en Cuadrícula 2x2:** El Auditor QA analiza 4 fotogramas clave deterministas en una sola imagen combinada generada en 0.02s (`collage_qc.png`).

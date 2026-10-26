@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "status": "ok",
+  "effectcraft_version": "effectcraft-cli 0.11.1",
+  "timestamp_utc": "2026-10-26T17:30:19.281730+00:00",
+  "design_file": "diseno.json",
+  "template_name": "Lower Third",
+  "comp_name": "Lower Third",
+  "output_file": "overlay_titulo.mov",
+  "output_path": "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\PROYECTOS\\2026-10-26_accesibilidad-rural\\01_fuentes\\graficos\\overlay_titulo.mov",
+  "sha256": "AB92D4CFDCB42A49C7B87EFE03A3349B82C68C8652C9880060D6D1848816050C",
+  "size_bytes": 12819100,
+  "format": "prores",
+  "channels": "rgba",
+  "dimensions": [
+    1920,
+    1080
+  ],
+  "duration_sec": 3.0,
+  "frames_count": 90,
+  "has_alpha": true,
+  "pix_fmt": "yuva444p12le",
+  "values_applied": {
+    "Name": "ACCESIBILIDAD RURAL",
+    "Title": "Tecnolog\u00eda en los Andes",
+    "Bar Color": [
+      0.0,
+      0.72,
+      1.0,
+      1.0
+    ]
+  }
+}

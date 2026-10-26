@@ -26,58 +26,58 @@
                           "size_bytes":  56963,
                           "rel_path":  "04_previews\\collage_qc.png",
                           "file":  "collage_qc.png",
-                          "modified":  "2026-10-26T16:07:08Z",
+                          "modified":  "2026-10-26T17:53:24Z",
                           "sha256":  "DD201FF03326A79BDEE22F7DC104408754655DA2C011216C143403558C1E29CC"
                       },
                       {
                           "size_bytes":  959,
                           "rel_path":  "01_fuentes\\graficos\\render-manifest-diseno_golden.json",
                           "file":  "render-manifest-diseno_golden.json",
-                          "modified":  "2026-10-26T16:07:03Z",
-                          "sha256":  "CD673686680E76851DA5003E623BB35B87A47B6E20FFEF29E09F0C4E83BA3389"
+                          "modified":  "2026-10-26T17:53:20Z",
+                          "sha256":  "78365A6CE58C98ADBAD64F9C498F20CB8D57D1A113AE724A134949675398FFAA"
                       },
                       {
                           "size_bytes":  959,
                           "rel_path":  "01_fuentes\\graficos\\render-manifest.json",
                           "file":  "render-manifest.json",
-                          "modified":  "2026-10-26T16:07:03Z",
-                          "sha256":  "CD673686680E76851DA5003E623BB35B87A47B6E20FFEF29E09F0C4E83BA3389"
+                          "modified":  "2026-10-26T17:53:20Z",
+                          "sha256":  "78365A6CE58C98ADBAD64F9C498F20CB8D57D1A113AE724A134949675398FFAA"
                       },
                       {
                           "size_bytes":  626,
                           "rel_path":  "01_fuentes\\graficos\\diseno_golden.json",
                           "file":  "diseno_golden.json",
-                          "modified":  "2026-10-26T16:07:01Z",
+                          "modified":  "2026-10-26T17:53:17Z",
                           "sha256":  "6604A1389CC7DDFB23AB99669EAECAA5D2242FC07B3ADF14EB282A3334BBDA26"
                       },
                       {
                           "size_bytes":  6864970,
                           "rel_path":  "01_fuentes\\graficos\\overlay_golden.mov",
                           "file":  "overlay_golden.mov",
-                          "modified":  "2026-10-26T16:07:03Z",
+                          "modified":  "2026-10-26T17:53:19Z",
                           "sha256":  "519307DC3CE84218AAAFA037D5512A92181A9F8B336BC076596A6C55AFEDB05F"
                       },
                       {
                           "size_bytes":  339461,
                           "rel_path":  "03_exports\\test-golden-10s_v01_horizontal_720.mp4",
                           "file":  "test-golden-10s_v01_horizontal_720.mp4",
-                          "modified":  "2026-10-26T16:07:05Z",
+                          "modified":  "2026-10-26T17:53:22Z",
                           "sha256":  "47583AB504C478F89BAE6A63615A5407186068D4D573D17686505C884927543F"
                       },
                       {
                           "size_bytes":  9149,
                           "rel_path":  "02_filmcraft\\test-golden-10s_v01.fcproj",
                           "file":  "test-golden-10s_v01.fcproj",
-                          "modified":  "2026-10-26T16:07:04Z",
+                          "modified":  "2026-10-26T17:53:20Z",
                           "sha256":  "06AFA2003B28EA9579FB6771F18EA1E05F5795CE755CC8F43ABF090E0E2F1117"
                       }
                   ],
     "pipeline_status":  "SUCCESS",
     "project":  "test-golden-10s",
     "artifacts_count":  10,
-    "session_id":  "10113cfc-a054-4204-bcd0-65dec7d8ec9f",
+    "session_id":  "a49bd5bb-74f0-4644-ac48-d895ad175b91",
     "target_video":  "test-golden-10s_v01_horizontal_720.mp4",
-    "timestamp_utc":  "2026-10-26T16:07:08Z",
+    "timestamp_utc":  "2026-10-26T17:53:24Z",
     "exit_code":  0,
     "quality_gate":  "PASSED"
 }

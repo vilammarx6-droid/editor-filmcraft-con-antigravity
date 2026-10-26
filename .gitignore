@@ -32,15 +32,21 @@ tmp/
 *.log
 
 # Exportaciones pesadas de video y miniaturas (GitHub bloquea archivos > 100MB)
-# Se conservan los archivos .gitkeep para mantener la estructura
+# Se conservan los archivos .gitkeep y los manifiestos JSON de auditoría
 PROYECTOS/**/03_exports/*
 !PROYECTOS/**/03_exports/.gitkeep
+!PROYECTOS/**/03_exports/*.json
 PROYECTOS/**/02_filmcraft/*.mp4
 
 # Videos y audios pesados generados de trabajo en demos (>50MB)
 PROYECTOS/2026-10-24_mediflow-demo/01_fuentes/audio/*.wav
 PROYECTOS/2026-10-24_mediflow-demo/01_fuentes/musica/
 PROYECTOS/2026-10-24_mediflow-demo/01_fuentes/video/
+PROYECTOS/2026-10-26_accesibilidad-rural/01_fuentes/audio/*.wav
+PROYECTOS/2026-10-26_accesibilidad-rural/01_fuentes/musica/*.wav
+PROYECTOS/2026-10-26_accesibilidad-rural/01_fuentes/musica/*.mp3
+PROYECTOS/2026-10-26_accesibilidad-rural/01_fuentes/video/
+PROYECTOS/2026-10-26_accesibilidad-rural/01_fuentes/graficos/*.mov
 
 # FilmCraft temporales / autosave
 *.fcproj.backup

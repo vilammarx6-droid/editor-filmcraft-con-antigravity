@@ -1,0 +1,14 @@
+{
+  "status": "ok",
+  "engine": "SoundCraft CLI 0.13.1",
+  "input_file": "musica_acustica_temp.wav",
+  "output_file": "musica_acustica_48k.wav",
+  "output_path": "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\PROYECTOS\\2026-10-26_accesibilidad-rural\\01_fuentes\\musica\\musica_acustica_48k.wav",
+  "sample_rate": 48000,
+  "channels": 2,
+  "seconds": 67.97697916666667,
+  "sample_format": "Int24",
+  "size_bytes": 19577474,
+  "sha256": "688914BE7A9D49F7CD4D8E83F14476FD0C35D614353B700B75A4EB2B1CC0CB75",
+  "peak_normalized": false
+}

@@ -1,0 +1,13 @@
+{
+  "status": "ok",
+  "engine": "SoundCraft CLI 0.13.1",
+  "input_file": "locucion.wav",
+  "output_file": "locucion_master.wav",
+  "output_path": "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\PROYECTOS\\2026-10-26_accesibilidad-rural\\01_fuentes\\audio\\locucion_master.wav",
+  "sample_rate": 48000,
+  "channels": 2,
+  "seconds": 66.888,
+  "sample_format": "Int24",
+  "size_bytes": 19263848,
+  "sha256": "D8F714553F672BABC56F0E009F3B844084D348071B3A2F2CB31E9CD5B1864152"
+}

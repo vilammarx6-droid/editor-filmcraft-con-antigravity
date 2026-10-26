@@ -1,0 +1,83 @@
+﻿{
+    "schema_version":  "1.0.0",
+    "artifacts":  [
+                      {
+                          "size_bytes":  2402,
+                          "rel_path":  "00_brief\\brief.md",
+                          "file":  "brief.md",
+                          "modified":  "2026-10-26T17:25:04Z",
+                          "sha256":  "44A8573FB4B451A9BDC6E490841FDBB3EA6C96DFA64AB676251A316E395E0A07"
+                      },
+                      {
+                          "size_bytes":  12842574,
+                          "rel_path":  "01_fuentes\\audio\\locucion.wav",
+                          "file":  "locucion.wav",
+                          "modified":  "2026-10-26T17:25:30Z",
+                          "sha256":  "4AE560DF4D1FC032EDCE0306DC7911B154559E6DBF33C457FE5EC8A1D27B06CD"
+                      },
+                      {
+                          "size_bytes":  1253,
+                          "rel_path":  "01_fuentes\\audio\\locucion.srt",
+                          "file":  "locucion.srt",
+                          "modified":  "2026-10-26T17:25:30Z",
+                          "sha256":  "2DB6471604EBC940129CCB62A7BFCF7E4FFF9470A71C79A713C41D0A0AB37B2D"
+                      },
+                      {
+                          "size_bytes":  515703,
+                          "rel_path":  "04_previews\\collage_qc.png",
+                          "file":  "collage_qc.png",
+                          "modified":  "2026-10-26T17:34:00Z",
+                          "sha256":  "4B7FE2A318A0E74720121EFFF4A74B7C00B52DB2135A81410BB35549CC4311C5"
+                      },
+                      {
+                          "size_bytes":  967,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\render-manifest-diseno.json",
+                          "file":  "render-manifest-diseno.json",
+                          "modified":  "2026-10-26T17:30:19Z",
+                          "sha256":  "A4FAE68DD6E9CDC8585D7B7F6F9B6F9A2ACCE8B627F17F45C42602918A2532A9"
+                      },
+                      {
+                          "size_bytes":  967,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\render-manifest.json",
+                          "file":  "render-manifest.json",
+                          "modified":  "2026-10-26T17:30:19Z",
+                          "sha256":  "A4FAE68DD6E9CDC8585D7B7F6F9B6F9A2ACCE8B627F17F45C42602918A2532A9"
+                      },
+                      {
+                          "size_bytes":  618,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\diseno.json",
+                          "file":  "diseno.json",
+                          "modified":  "2026-10-26T17:30:05Z",
+                          "sha256":  "A746D3299B8188C7C94B04337622E55109DD47EF6F7DA3C5DC0A9105D56D9E8C"
+                      },
+                      {
+                          "size_bytes":  12819100,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\01_fuentes\\graficos\\overlay_titulo.mov",
+                          "file":  "overlay_titulo.mov",
+                          "modified":  "2026-10-26T17:30:19Z",
+                          "sha256":  "AB92D4CFDCB42A49C7B87EFE03A3349B82C68C8652C9880060D6D1848816050C"
+                      },
+                      {
+                          "size_bytes":  11204745,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\03_exports\\accesibilidad-rural_v01_vertical_720.mp4",
+                          "file":  "accesibilidad-rural_v01_vertical_720.mp4",
+                          "modified":  "2026-10-26T17:32:49Z",
+                          "sha256":  "E97C5D7774E172223FDA71DAEA2A2C5546DFB60547DAAE7CD9BFCAB18872A6B6"
+                      },
+                      {
+                          "size_bytes":  14506,
+                          "rel_path":  "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\\\02_filmcraft\\accesibilidad-rural_v01.fcproj",
+                          "file":  "accesibilidad-rural_v01.fcproj",
+                          "modified":  "2026-10-26T17:32:39Z",
+                          "sha256":  "D00CABD7E2C545ACBAC881A2E9725D71174ACD3913D83303CCF2EDB4154DD7F9"
+                      }
+                  ],
+    "pipeline_status":  "SUCCESS",
+    "project":  "2026-10-26_accesibilidad-rural",
+    "artifacts_count":  10,
+    "session_id":  "93172ea2-00ad-4f80-9909-798594264c58",
+    "target_video":  "accesibilidad-rural_v01_vertical_720.mp4",
+    "timestamp_utc":  "2026-10-26T17:34:01Z",
+    "exit_code":  0,
+    "quality_gate":  "PASSED"
+}

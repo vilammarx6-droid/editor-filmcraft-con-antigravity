@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "status": "ok",
+  "effectcraft_version": "effectcraft-cli 0.11.1",
+  "timestamp_utc": "2026-10-26T17:56:05.446207+00:00",
+  "design_file": "diseno_educacion.json",
+  "template_name": "Lower Third",
+  "comp_name": "Lower Third",
+  "output_file": "overlay_03_educacion.mov",
+  "output_path": "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\PROYECTOS\\2026-10-26_accesibilidad-rural\\01_fuentes\\graficos\\overlay_03_educacion.mov",
+  "sha256": "0A33F5313349CF433043E48CDC4991A93DE2FEB4B21969EF1051BDAC60BED252",
+  "size_bytes": 12020260,
+  "format": "prores",
+  "channels": "rgba",
+  "dimensions": [
+    1920,
+    1080
+  ],
+  "duration_sec": 3.0,
+  "frames_count": 90,
+  "has_alpha": true,
+  "pix_fmt": "yuva444p12le",
+  "values_applied": {
+    "Name": "EDUCACION & SALUD",
+    "Title": "Democratizando oportunidades",
+    "Bar Color": [
+      1.0,
+      0.8,
+      0.2,
+      1.0
+    ]
+  }
+}

@@ -186,6 +186,108 @@ if ($noManiPassed) {
     Write-Host "[TEST 5 PASADO] El pipeline detecto diseno sin render-manifest.json y BLOQUEO con exit 1." -ForegroundColor Green
 }
 
+# -------------------------------------------------------------
+# TEST 6: Negativa - Ausencia de video master en 03_exports
+# -------------------------------------------------------------
+Write-Host "`n----------------------------------------------------------" -ForegroundColor Cyan
+Write-Host " TEST 6: Negativa (Falta de video master en 03_exports)   " -ForegroundColor Cyan
+Write-Host "----------------------------------------------------------" -ForegroundColor Cyan
+
+$tempNoMaster = Join-Path $env:TEMP "proj_no_master"
+New-Item -ItemType Directory -Path (Join-Path $tempNoMaster "00_brief") -Force | Out-Null
+New-Item -ItemType Directory -Path (Join-Path $tempNoMaster "01_fuentes\graficos") -Force | Out-Null
+New-Item -ItemType Directory -Path (Join-Path $tempNoMaster "02_filmcraft") -Force | Out-Null
+New-Item -ItemType Directory -Path (Join-Path $tempNoMaster "03_exports") -Force | Out-Null
+Copy-Item (Join-Path $testDir "00_brief\brief.md") (Join-Path $tempNoMaster "00_brief\brief.md")
+Copy-Item (Join-Path $testDir "02_filmcraft\test-golden-10s_v01.fcproj") (Join-Path $tempNoMaster "02_filmcraft\test-golden-10s_v01.fcproj")
+# 03_exports queda vacia intencionalmente
+
+$noMasterPassed = $false
+try {
+    & "$scriptDir\ejecutar-pipeline.ps1" -Proyecto $tempNoMaster 2>&1 | Out-Null
+    if ($LASTEXITCODE -eq 0) { $noMasterPassed = $true }
+} catch {
+    $noMasterPassed = $false
+}
+Remove-Item -Path $tempNoMaster -Recurse -Force -ErrorAction SilentlyContinue
+
+if ($noMasterPassed) {
+    Write-Host "[FALLO] El pipeline declaro exito sin video master exportado." -ForegroundColor Red
+    exit 1
+} else {
+    Write-Host "[TEST 6 PASADO] El pipeline detecto falta de video master y BLOQUEO con exit 1." -ForegroundColor Green
+}
+
+# -------------------------------------------------------------
+# TEST 7: Negativa - Miniatura/Manifiesto manipulado (SHA-256 no coincide)
+# -------------------------------------------------------------
+Write-Host "`n----------------------------------------------------------" -ForegroundColor Cyan
+Write-Host " TEST 7: Negativa (Manipulacion de hash en manifiesto)    " -ForegroundColor Cyan
+Write-Host "----------------------------------------------------------" -ForegroundColor Cyan
+
+$tempTampered = Join-Path $env:TEMP "proj_tampered_thumb"
+New-Item -ItemType Directory -Path (Join-Path $tempTampered "00_brief") -Force | Out-Null
+New-Item -ItemType Directory -Path (Join-Path $tempTampered "02_filmcraft") -Force | Out-Null
+New-Item -ItemType Directory -Path (Join-Path $tempTampered "03_exports") -Force | Out-Null
+Copy-Item (Join-Path $testDir "00_brief\brief.md") (Join-Path $tempTampered "00_brief\brief.md")
+Copy-Item (Join-Path $testDir "02_filmcraft\test-golden-10s_v01.fcproj") (Join-Path $tempTampered "02_filmcraft\test-golden-10s_v01.fcproj")
+Copy-Item (Join-Path $testDir "03_exports\test-golden-10s_v01_horizontal_720.mp4") (Join-Path $tempTampered "03_exports\test-golden-10s_v01_horizontal_720.mp4")
+
+# Crear thumbnail falso con hash adulterado en el manifiesto
+Set-Content -Path (Join-Path $tempTampered "03_exports\thumbnail.jpg") -Value "DUMMY_IMAGE_BYTES" -Encoding UTF8
+$tamperedManifest = @{
+    status          = "ok"
+    engine          = "PhotoCraft CLI 0.16.0"
+    thumbnail_file  = "thumbnail.jpg"
+    sha256          = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+}
+$tamperedManifest | ConvertTo-Json | Set-Content -Path (Join-Path $tempTampered "03_exports\thumbnail-manifest.json") -Encoding UTF8
+
+$tamperPassed = $false
+try {
+    & "$scriptDir\ejecutar-pipeline.ps1" -Proyecto $tempTampered 2>&1 | Out-Null
+    if ($LASTEXITCODE -eq 0) { $tamperPassed = $true }
+} catch {
+    $tamperPassed = $false
+}
+Remove-Item -Path $tempTampered -Recurse -Force -ErrorAction SilentlyContinue
+
+if ($tamperPassed) {
+    Write-Host "[FALLO] El pipeline dejo pasar un manifiesto con SHA-256 adulterado." -ForegroundColor Red
+    exit 1
+} else {
+    Write-Host "[TEST 7 PASADO] El pipeline detecto hash adulterado en manifiesto y BLOQUEO con exit 1." -ForegroundColor Green
+}
+
+# -------------------------------------------------------------
+# TEST 8: Negativa - Fallo honesto de PhotoCraft sin falsear motor
+# -------------------------------------------------------------
+Write-Host "`n----------------------------------------------------------" -ForegroundColor Cyan
+Write-Host " TEST 8: Negativa (Fallo estricto de PhotoCraft CLI)       " -ForegroundColor Cyan
+Write-Host "----------------------------------------------------------" -ForegroundColor Cyan
+
+$tempPcFail = Join-Path $env:TEMP "pc_fail_test"
+New-Item -ItemType Directory -Path $tempPcFail -Force | Out-Null
+$prevEnv = $env:PHOTOCRAFT_CLI
+$env:PHOTOCRAFT_CLI = "comando_inexistente_fail.exe"
+
+$pcThrew = $false
+try {
+    & $pyCmd "$scriptDir\photocraft\pc_thumbnail.py" --project $tempPcFail --title "TEST" 2>&1 | Out-Null
+    if ($LASTEXITCODE -ne 0) { $pcThrew = $true }
+} catch {
+    $pcThrew = $true
+}
+$env:PHOTOCRAFT_CLI = $prevEnv
+Remove-Item -Path $tempPcFail -Recurse -Force -ErrorAction SilentlyContinue
+
+if ($pcThrew) {
+    Write-Host "[TEST 8 PASADO] PhotoCraft CLI fallo de verdad con exit 1 sin simular exito falso." -ForegroundColor Green
+} else {
+    Write-Host "[FALLO] PhotoCraft CLI no aborto con exit 1 ante comando fallido." -ForegroundColor Red
+    exit 1
+}
+
 Write-Host "`n==========================================================" -ForegroundColor Cyan
-Write-Host " [SUITE EXITOSA] Las 5 pruebas rigurosas pasaron al 100%  " -ForegroundColor Green
+Write-Host " [SUITE EXITOSA] Las 8 pruebas rigurosas pasaron al 100%  " -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Cyan

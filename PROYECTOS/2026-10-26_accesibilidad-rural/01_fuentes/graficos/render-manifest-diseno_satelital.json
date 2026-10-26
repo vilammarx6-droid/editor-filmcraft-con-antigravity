@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "status": "ok",
+  "effectcraft_version": "effectcraft-cli 0.11.1",
+  "timestamp_utc": "2026-10-26T17:56:02.627214+00:00",
+  "design_file": "diseno_satelital.json",
+  "template_name": "Lower Third",
+  "comp_name": "Lower Third",
+  "output_file": "overlay_02_satelital.mov",
+  "output_path": "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\PROYECTOS\\2026-10-26_accesibilidad-rural\\01_fuentes\\graficos\\overlay_02_satelital.mov",
+  "sha256": "9F1204BC6EAA2C0CE56DCFA0D987404EF9043536E64939D30BB75BB2B5CE9359",
+  "size_bytes": 11036896,
+  "format": "prores",
+  "channels": "rgba",
+  "dimensions": [
+    1920,
+    1080
+  ],
+  "duration_sec": 3.0,
+  "frames_count": 90,
+  "has_alpha": true,
+  "pix_fmt": "yuva444p12le",
+  "values_applied": {
+    "Name": "INTERNET SATELITAL",
+    "Title": "Conectividad de baja orbita",
+    "Bar Color": [
+      0.0,
+      0.95,
+      0.65,
+      1.0
+    ]
+  }
+}

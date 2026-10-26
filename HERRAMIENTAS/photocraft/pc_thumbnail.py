@@ -17,9 +17,9 @@ import subprocess
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageFilter
 
 def get_photocraft_cli():
-    # 1. Variable de entorno
+    # 1. Variable de entorno (prioridad si está configurada)
     cli = os.environ.get("PHOTOCRAFT_CLI")
-    if cli and os.path.exists(cli):
+    if cli:
         return cli
     
     # 2. Config local
@@ -62,7 +62,7 @@ def find_font(repo_root, font_name="Anton-Regular.ttf"):
             return os.path.join(root, font_name)
     return None
 
-def create_thumbnail(project_dir, title=None, subtitle=None, hero_image=None, aspect="16:9", output_file=None):
+def create_thumbnail(project_dir, title=None, subtitle=None, hero_image=None, aspect="16:9", output_file=None, allow_fallback=False):
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     
     # Definir dimensiones según aspecto
@@ -176,7 +176,15 @@ def create_thumbnail(project_dir, title=None, subtitle=None, hero_image=None, as
     print(f"[*] Procesando y optimizando con PhotoCraft CLI: {pc_cli}")
     
     cmd = [pc_cli, "convert", temp_png, output_file, "--quality", "92"]
-    res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    ret_code = 0
+    err_msg = ""
+    try:
+        res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        ret_code = res.returncode
+        err_msg = res.stderr.strip() or res.stdout.strip()
+    except Exception as e:
+        ret_code = -1
+        err_msg = str(e)
     
     if os.path.exists(temp_png):
         try:
@@ -184,10 +192,22 @@ def create_thumbnail(project_dir, title=None, subtitle=None, hero_image=None, as
         except Exception:
             pass
 
-    if res.returncode != 0 or not os.path.exists(output_file):
-        # Fallback a guardado directo si falla CLI
-        print(f"[!] Aviso: PhotoCraft CLI aviso ({res.stderr.strip()}). Guardando imagen directamente.")
+    engine_used = "PhotoCraft CLI 0.16.0"
+    status_str = "ok"
+    warning_msg = None
+
+    if ret_code != 0 or not os.path.exists(output_file):
+        if not err_msg:
+            err_msg = "Archivo de salida no generado"
+        if not allow_fallback:
+            raise RuntimeError(f"Fallo critico en PhotoCraft CLI (exit code {ret_code}): {err_msg}")
+        
+        # Fallback a guardado directo degradado con PIL si se solicito explicitamente
+        print(f"[!] Aviso: PhotoCraft CLI fallo ({err_msg}). Guardando con PIL en modo degradado...")
         base_img.convert("RGB").save(output_file, "JPEG", quality=92)
+        engine_used = "PIL"
+        status_str = "degradado"
+        warning_msg = f"PhotoCraft CLI fallo ({err_msg}). Salida generada mediante fallback PIL."
 
     # Validar dimensiones con PhotoCraft CLI info
     try:
@@ -200,8 +220,8 @@ def create_thumbnail(project_dir, title=None, subtitle=None, hero_image=None, as
     file_size = os.path.getsize(output_file)
 
     manifest = {
-        "status": "ok",
-        "engine": "PhotoCraft CLI 0.16.0",
+        "status": status_str,
+        "engine": engine_used,
         "thumbnail_file": os.path.basename(output_file),
         "output_path": output_file,
         "width": doc_info.get("width", width),
@@ -210,14 +230,17 @@ def create_thumbnail(project_dir, title=None, subtitle=None, hero_image=None, as
         "size_bytes": file_size,
         "sha256": sha256_hash
     }
+    if warning_msg:
+        manifest["warning"] = warning_msg
 
     manifest_path = os.path.join(os.path.dirname(output_file), "thumbnail-manifest.json")
     with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
 
-    print(f"[OK] Miniatura generada con PhotoCraft: {output_file} ({width}x{height})")
-    print(f"     SHA-256: {sha256_hash}")
-    print(f"     Manifiesto: {manifest_path}")
+    print(f"[{'OK' if status_str == 'ok' else 'AVISO'}] Miniatura emitida ({engine_used}): {output_file} ({width}x{height})")
+    print(f"     Status:    {status_str}")
+    print(f"     SHA-256:   {sha256_hash}")
+    print(f"     Manifest:  {manifest_path}")
     return manifest
 
 if __name__ == "__main__":
@@ -228,6 +251,13 @@ if __name__ == "__main__":
     parser.add_argument("--aspect", default="16:9", choices=["16:9", "9:16", "1:1"], help="Aspect ratio")
     parser.add_argument("--hero", help="Ruta a imagen base de partida")
     parser.add_argument("--out", help="Ruta de salida")
+    parser.add_argument("--allow-fallback", action="store_true", help="Permitir fallback degradado con PIL si falla PhotoCraft")
     
     args = parser.parse_args()
-    create_thumbnail(args.project, args.title, args.subtitle, args.hero, args.aspect, args.out)
+    try:
+        manifest = create_thumbnail(args.project, args.title, args.subtitle, args.hero, args.aspect, args.out, allow_fallback=args.allow_fallback)
+        if manifest.get("status") == "degradado" and not args.allow_fallback:
+            sys.exit(1)
+    except Exception as e:
+        print(f"[ERROR] {e}", file=sys.stderr)
+        sys.exit(1)

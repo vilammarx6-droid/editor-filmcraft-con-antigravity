@@ -1,0 +1,20 @@
+{
+  "template": "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\HERRAMIENTAS\\effectcraft\\templates\\lower_third_clean.ectemplate",
+  "comp": "Lower Third",
+  "values": {
+    "Name": "ACCESIBILIDAD RURAL",
+    "Title": "El reto de los 4,000 msnm",
+    "Bar Color": [
+      0.0,
+      0.75,
+      1.0,
+      1.0
+    ]
+  },
+  "fps": 30,
+  "start": 0.0,
+  "end": 3.0,
+  "format": "prores",
+  "channels": "rgba",
+  "output": "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\PROYECTOS\\2026-10-26_accesibilidad-rural\\01_fuentes\\graficos\\overlay_01_intro.mov"
+}
