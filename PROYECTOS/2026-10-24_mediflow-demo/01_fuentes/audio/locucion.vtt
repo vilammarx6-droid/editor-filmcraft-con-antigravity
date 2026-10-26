@@ -1,0 +1,72 @@
+1
+00:00:00,100 --> 00:00:13,433
+Alguna vez te has puesto a pensar qué se siente estar en una sala de emergencias esperando un resultado médico, mientras ves a los doctores corriendo de un lado a otro y perdiendo minutos valiosos buscando papeles?
+
+2
+00:00:13,383 --> 00:00:22,975
+Ahí es donde nace MediFlow, y no te lo cuento como un software más, sino como una solución pensada para devolvernos el tiempo y la calma.
+
+3
+00:00:22,975 --> 00:00:31,304
+Mira este mapa en pantalla, es como un camino inteligente de once pasos que cuida cada documento para que nada se pierda.
+
+4
+00:00:31,304 --> 00:00:46,508
+Y ponte por un momento en los zapatos de Carlos, que llegó con un dolor agudo en el pecho y cuyo informe de tomografía fue leído por el agente en solo tres segundos, mandando una alerta directa a Slack para que la guardia lo atendiera de inmediato.
+
+5
+00:00:46,508 --> 00:01:01,073
+Fíjate cómo en pantalla MediFlow recibe el documento, ejecuta la lectura óptica, valida la calidad al cien por ciento y detecta la señal crítica sin que nadie tenga que abrir un correo ni clasificar un PDF a mano.
+
+6
+00:01:01,073 --> 00:01:21,983
+En segundos, el caso queda enrutado a la Cola de Urgencias Médicas, el canal de Slack avisa a todo el equipo de guardia con el enlace directo al expediente, y cada evidencia queda respaldada de forma inmutable en la nube de Cloudflare R2, verificando dato por dato desde la identificación del paciente hasta la firma médica.
+
+7
+00:01:21,983 --> 00:01:39,293
+O mira el caso de Luisa, donde pasa algo que a mí me encanta: el sistema no se cree perfecto, si encuentra una duda en la orden médica no improvisa jamás, se detiene con humildad y le pide a un especialista de carne y hueso que confirme la decisión con un clic.
+
+8
+00:01:39,293 --> 00:01:43,179
+Porque en medicina, la prudencia salva vidas.
+
+9
+00:01:43,179 --> 00:01:57,024
+Cuando el documento de Luisa llega con una prioridad ambigua, MediFlow no adivina ni descarta el archivo: lo coloca en estado de Revisión Humana y muestra el documento original lado a lado con los datos extraídos.
+
+10
+00:01:57,024 --> 00:02:08,369
+Sigue el cursor en pantalla: el médico revisa la evidencia, selecciona la prioridad confirmada, deja su justificación clínica auditable y presiona resolver.
+
+11
+00:02:08,369 --> 00:02:21,576
+Al instante, el sistema retoma el flujo autónomo, entrega el documento al área de Laboratorio, notifica el cierre en el canal de Slack de revisión humana y guarda el historial completo en R2.
+
+12
+00:02:21,576 --> 00:02:31,630
+Y para chicos como Kevin, significa que el día de su alta su historia clínica queda impecable con once estados verificables y respaldados en la nube.
+
+13
+00:02:31,630 --> 00:02:39,347
+Aquí vemos cómo su epicrisis por neumotórax espontáneo se procesa de principio a fin con una limpieza admirable.
+
+14
+00:02:39,347 --> 00:02:56,576
+Mientras recorremos su expediente en pantalla, observa cómo cada hallazgo clínico, desde sus signos vitales de ingreso y radiografía de tórax hasta su plan de control ambulatorio, queda estructurado con precisión quirúrgica y cien por ciento de consistencia documental.
+
+15
+00:02:56,576 --> 00:03:14,999
+Abajo, en el historial del documento, cada paso queda sellado con fecha y hora: recibido, validado, clasificado, extraído, evaluado, enrutado y entregado, sincronizando automáticamente el aviso en Slack y los paquetes originales y JSON en la nube.
+
+16
+00:03:14,999 --> 00:03:23,260
+Y puede abrir su teléfono en el portal de pacientes y ver sus exámenes sin hacer una sola fila ni pedir copias fotostáticas.
+
+17
+00:03:23,260 --> 00:03:33,749
+Con solo ingresar su documento de identidad, Kevin accede desde su celular a sus informes médicos listos para descargar y compartir con cualquier especialista.
+
+18
+00:03:33,749 --> 00:03:46,046
+Porque al final del día MediFlow no se trata de líneas de código, se trata de nosotros, logrando que los médicos pasen menos tiempo buscando papeles y mucho más tiempo salvando vidas.
+

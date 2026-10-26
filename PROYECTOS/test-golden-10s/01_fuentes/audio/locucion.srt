@@ -1,0 +1,4 @@
+1
+00:00:00,100 --> 00:00:07,414
+Este es el test dorado de diez segundos para verificar la integridad del pipeline de FilmCraft con Antigravity.
+

@@ -80,20 +80,46 @@ if ($hasGuion) {
     Write-Host "  -> Proyecto sin locucion hablada (musical o instrumental). Omitiendo TTS." -ForegroundColor Gray
 }
 
-# 3. Comprobar proyecto FilmCraft
+# 3. Comprobar proyecto FilmCraft y Montaje Real
 Write-Host "`n[Fase 2/4] Validacion de Linea de Tiempo en FilmCraft..." -ForegroundColor Yellow
-& "$PSScriptRoot\resumir-timeline.ps1" -Proyecto $Proyecto
-if ($LASTEXITCODE -ne 0) {
-    Write-Warning "No se pudo inspeccionar el proyecto FilmCraft de forma headless."
+$fcDir = Join-Path $Proyecto "02_filmcraft"
+$fcprojFile = Get-ChildItem -LiteralPath $fcDir -Filter "*.fcproj" -File -ErrorAction SilentlyContinue |
+    Where-Object { $_.DirectoryName -notmatch "Auto-Save" } | Select-Object -First 1
+
+if (-not $fcprojFile) {
+    throw "FALLO CRITICO: No existe ningun archivo .fcproj en $fcDir. El pipeline exige una linea de tiempo real montada en FilmCraft."
 }
 
-# 4. Generar Collage de Auditoria QA
-Write-Host "`n[Fase 3/4] Generacion de Collage Determinista QA..." -ForegroundColor Yellow
+& "$PSScriptRoot\resumir-timeline.ps1" -Proyecto $Proyecto
+if ($LASTEXITCODE -ne 0) {
+    throw "FALLO CRITICO: La linea de tiempo de FilmCraft en $($fcprojFile.Name) esta corrupta o no pudo ser leida."
+}
+
+# 4. Validacion de Manifiestos de Motion Graphics (EffectCraft)
+Write-Host "`n[Fase 3/4] Validacion de Activos y Manifiestos de EffectCraft..." -ForegroundColor Yellow
+$gfxDir = Join-Path $Proyecto "01_fuentes\graficos"
+$disenoFiles = Get-ChildItem -LiteralPath $gfxDir -Filter "*diseno*.json" -File -ErrorAction SilentlyContinue
+if ($disenoFiles) {
+    $gfxManifest = Join-Path $gfxDir "render-manifest.json"
+    if (-not (Test-Path $gfxManifest)) {
+        throw "FALLO DE CONTRATO GRAFICO: Existen especificaciones de diseno en $gfxDir pero falta 'render-manifest.json'. Todo render debe estar verificado criptograficamente."
+    }
+    $gm = Get-Content $gfxManifest -Raw -Encoding UTF8 | ConvertFrom-Json
+    if ($gm.status -ne "ok") {
+        throw "FALLO DE CONTRATO GRAFICO: El render-manifest.json reporta status='$($gm.status)'. El auditor rechaza assets fallidos."
+    }
+    Write-Host "  -> Manifiesto de EffectCraft verificado: $($gm.output_file) (SHA256: $($gm.sha256.Substring(0,16))..., Alfa: $($gm.has_alpha))" -ForegroundColor Green
+} else {
+    Write-Host "  -> No se detectaron especificaciones de diseno EffectCraft en este proyecto." -ForegroundColor Gray
+}
+
+# 5. Generar Collage de Auditoria QA
+Write-Host "`n[Fase 4/5] Generacion de Collage Determinista QA..." -ForegroundColor Yellow
 $pyCmd = "python"
 & $pyCmd "$PSScriptRoot\crear-collage-qa.py" $Proyecto
 
-# 5. Quality Gate de Export
-Write-Host "`n[Fase 4/4] Ejecutando Quality Gate de Audio y Video..." -ForegroundColor Yellow
+# 6. Quality Gate de Export Estricto
+Write-Host "`n[Fase 5/5] Ejecutando Quality Gate de Audio y Video..." -ForegroundColor Yellow
 $exportsDir = Join-Path $Proyecto "03_exports"
 $masterVideos = Get-ChildItem -LiteralPath $exportsDir -Filter "*.mp4" -File -ErrorAction SilentlyContinue |
     Sort-Object LastWriteTime -Descending
@@ -135,14 +161,17 @@ $candidateFiles = @(
     (Join-Path $Proyecto "00_brief\brief.md"),
     (Join-Path $Proyecto "01_fuentes\audio\locucion.wav"),
     (Join-Path $Proyecto "01_fuentes\audio\locucion.srt"),
+    (Join-Path $Proyecto "01_fuentes\graficos\render-manifest.json"),
     (Join-Path $Proyecto "04_previews\collage_qc.png")
 )
+# Agregar overlays en 01_fuentes/graficos
+if (Test-Path $gfxDir) {
+    Get-ChildItem -LiteralPath $gfxDir -Filter "*.mov" -File | ForEach-Object { $candidateFiles += $_.FullName }
+    Get-ChildItem -LiteralPath $gfxDir -Filter "*.png" -File | ForEach-Object { $candidateFiles += $_.FullName }
+}
 if ($masterVideos -and $masterVideos.Count -gt 0) {
     $candidateFiles += $masterVideos[0].FullName
 }
-$fcDir = Join-Path $Proyecto "02_filmcraft"
-$fcprojFile = Get-ChildItem -LiteralPath $fcDir -Filter "*.fcproj" -File -ErrorAction SilentlyContinue |
-    Where-Object { $_.DirectoryName -notmatch "Auto-Save" } | Select-Object -First 1
 if ($fcprojFile) { $candidateFiles += $fcprojFile.FullName }
 
 foreach ($cf in $candidateFiles) {

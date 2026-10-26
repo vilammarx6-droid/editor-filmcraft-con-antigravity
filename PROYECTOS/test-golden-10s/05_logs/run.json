@@ -5,44 +5,65 @@
                           "size_bytes":  346,
                           "rel_path":  "00_brief\\brief.md",
                           "file":  "brief.md",
-                          "modified":  "2026-10-25T23:31:06Z",
+                          "modified":  "2026-10-25T23:53:44Z",
                           "sha256":  "29A6825E8247C1A78E86500F21F468A8382A64B33EC269D79A8490CC67429431"
                       },
                       {
                           "size_bytes":  1423950,
                           "rel_path":  "01_fuentes\\audio\\locucion.wav",
                           "file":  "locucion.wav",
-                          "modified":  "2026-10-25T23:31:09Z",
-                          "sha256":  "8B2512674104187081CF27164E37CD8AAEDBFA8EAB139F0C50F1B50812FB5209"
+                          "modified":  "2026-10-25T23:53:46Z",
+                          "sha256":  "1752D0629BDC82E0988CD684501F6EEE8023740D19F014F45B77DFC85C84E0A1"
                       },
                       {
                           "size_bytes":  145,
                           "rel_path":  "01_fuentes\\audio\\locucion.srt",
                           "file":  "locucion.srt",
-                          "modified":  "2026-10-25T23:31:09Z",
+                          "modified":  "2026-10-25T23:53:46Z",
                           "sha256":  "61D8FDA42BB19919579709B6F2AF491AEA8B2B493154D988AD3777D6982C7D0C"
                       },
                       {
-                          "size_bytes":  52291,
-                          "rel_path":  "04_previews\\collage_qc.png",
-                          "file":  "collage_qc.png",
-                          "modified":  "2026-10-25T23:31:10Z",
-                          "sha256":  "7C1C67FFCAD110E1C2648F2A7B8B2A4EDE6442269A58C40EFB862AF8570140ED"
+                          "size_bytes":  959,
+                          "rel_path":  "01_fuentes\\graficos\\render-manifest.json",
+                          "file":  "render-manifest.json",
+                          "modified":  "2026-10-26T01:30:01Z",
+                          "sha256":  "D302036D8DF9651A96C150469237E13C6F0EBCC850681288FA31A3770F4855FB"
                       },
                       {
-                          "size_bytes":  333975,
+                          "size_bytes":  56963,
+                          "rel_path":  "04_previews\\collage_qc.png",
+                          "file":  "collage_qc.png",
+                          "modified":  "2026-10-26T01:30:05Z",
+                          "sha256":  "DD201FF03326A79BDEE22F7DC104408754655DA2C011216C143403558C1E29CC"
+                      },
+                      {
+                          "size_bytes":  6864970,
+                          "rel_path":  "01_fuentes\\graficos\\overlay_golden.mov",
+                          "file":  "overlay_golden.mov",
+                          "modified":  "2026-10-26T01:30:01Z",
+                          "sha256":  "519307DC3CE84218AAAFA037D5512A92181A9F8B336BC076596A6C55AFEDB05F"
+                      },
+                      {
+                          "size_bytes":  339461,
                           "rel_path":  "03_exports\\test-golden-10s_v01_horizontal_720.mp4",
                           "file":  "test-golden-10s_v01_horizontal_720.mp4",
-                          "modified":  "2026-10-25T23:31:09Z",
-                          "sha256":  "A55B0B39E108CBFD34F8DB23D50CCFFAE6CD8F158ABA147CF5106620405EF2F0"
+                          "modified":  "2026-10-26T01:30:03Z",
+                          "sha256":  "47583AB504C478F89BAE6A63615A5407186068D4D573D17686505C884927543F"
+                      },
+                      {
+                          "size_bytes":  9149,
+                          "rel_path":  "02_filmcraft\\test-golden-10s_v01.fcproj",
+                          "file":  "test-golden-10s_v01.fcproj",
+                          "modified":  "2026-10-26T01:30:02Z",
+                          "sha256":  "06AFA2003B28EA9579FB6771F18EA1E05F5795CE755CC8F43ABF090E0E2F1117"
                       }
                   ],
     "pipeline_status":  "SUCCESS",
     "project":  "test-golden-10s",
-    "artifacts_count":  5,
-    "session_id":  "a5515ef6-0dcb-4123-b45d-7a448305b086",
+    "artifacts_count":  8,
+    "session_id":  "7d0b7a3e-e84f-4d5c-b87c-13e2d477bb98",
     "target_video":  "test-golden-10s_v01_horizontal_720.mp4",
-    "timestamp_utc":  "2026-10-25T23:31:10Z",
+    "timestamp_utc":  "2026-10-26T01:30:05Z",
     "exit_code":  0,
     "quality_gate":  "PASSED"
 }

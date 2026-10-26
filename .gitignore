@@ -39,6 +39,11 @@ PROYECTOS/**/03_exports/*.mkv
 PROYECTOS/**/03_exports/*.avi
 PROYECTOS/**/02_filmcraft/*.mp4
 
+# Videos y audios pesados generados de trabajo en demos (>50MB)
+PROYECTOS/2026-10-24_mediflow-demo/01_fuentes/audio/*.wav
+PROYECTOS/2026-10-24_mediflow-demo/01_fuentes/musica/
+PROYECTOS/2026-10-24_mediflow-demo/01_fuentes/video/
+
 # FilmCraft temporales / autosave
 *.fcproj.backup
 *.fcproj.tmp

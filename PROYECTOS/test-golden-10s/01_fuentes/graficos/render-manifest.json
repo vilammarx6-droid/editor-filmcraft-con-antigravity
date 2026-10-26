@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "status": "ok",
+  "effectcraft_version": "effectcraft-cli 0.11.1",
+  "timestamp_utc": "2026-10-26T01:30:01.713295+00:00",
+  "design_file": "diseno_golden.json",
+  "template_name": "Lower Third",
+  "comp_name": "Lower Third",
+  "output_file": "overlay_golden.mov",
+  "output_path": "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\PROYECTOS\\test-golden-10s\\01_fuentes\\graficos\\overlay_golden.mov",
+  "sha256": "519307DC3CE84218AAAFA037D5512A92181A9F8B336BC076596A6C55AFEDB05F",
+  "size_bytes": 6864970,
+  "format": "prores",
+  "channels": "rgba",
+  "dimensions": [
+    1920,
+    1080
+  ],
+  "duration_sec": 2.0,
+  "frames_count": 60,
+  "has_alpha": true,
+  "pix_fmt": "yuva444p12le",
+  "values_applied": {
+    "Name": "Ingeniero Auditor",
+    "Title": "Integridad de Pipeline FilmCraft",
+    "Bar Color": [
+      0.0,
+      0.9,
+      0.5,
+      1.0
+    ]
+  }
+}
