@@ -10,12 +10,16 @@ Producir de forma autónoma todos los activos sonoros del proyecto en `01_fuente
 
 ## Reglas Estrictas
 1. Ejecutar `HERRAMIENTAS\generar-voz.ps1 -Proyecto "PROYECTOS\..."` para crear `locucion.wav` y `locucion.srt` a partir del guion de `brief.md`.
-2. Si el brief pide música o memes, ejecutar:
+2. Para procesamiento o remasterización de stems con el motor DAW SoundCraft:
+   ```powershell
+   python HERRAMIENTAS\soundcraft\sc_process.py "01_fuentes\audio\locucion.wav" --rate 48000 --bit-depth 24
+   ```
+3. Si el brief pide música o memes, ejecutar:
    ```powershell
    .\HERRAMIENTAS\importar-recurso.ps1 -Proyecto "PROYECTOS\..." -Tipo [memes | cultural | musica | sfx]
    ```
-3. Validar con PowerShell que los archivos existan y tengan tamaño mayor a 0 bytes.
-4. **Cero Charla:** Responde al Director únicamente con este JSON:
+4. Validar con PowerShell o `soundcraft-cli info` que los archivos existan y tengan frecuencia de muestreo de 48000 Hz.
+5. **Cero Charla:** Responde al Director únicamente con este JSON:
 
 ```json
 {
@@ -23,6 +27,7 @@ Producir de forma autónoma todos los activos sonoros del proyecto en `01_fuente
   "locucion_wav": "01_fuentes/audio/locucion.wav",
   "subtitulos_srt": "01_fuentes/audio/locucion.srt",
   "musica": "01_fuentes/musica/nombre_track.mp3",
-  "sfx": ["whoosh_fast.wav", "vine_boom.wav"]
+  "sfx": ["whoosh_fast.wav", "vine_boom.wav"],
+  "soundcraft_manifest": "01_fuentes/audio/audio-manifest.json"
 }
 ```
