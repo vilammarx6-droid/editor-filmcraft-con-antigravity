@@ -14,6 +14,7 @@ import json
 import subprocess
 import argparse
 import re
+import math
 
 TARGET_LUFS_MIN = -16.0
 TARGET_LUFS_MAX = -13.0
@@ -30,17 +31,25 @@ def analyze_audio_ebur128(media_path):
     res = subprocess.run(cmd, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL, text=True, errors="replace")
     output = res.stderr
 
-    i_match = re.search(r"Integrated loudness:\s+I:\s+([-\d.]+)\s+LUFS", output)
-    lra_match = re.search(r"Loudness range:\s+LRA:\s+([-\d.]+)\s+LU", output)
-    tp_match = re.search(r"True peak:\s+Peak:\s+([-\d.]+)\s+dBFS", output)
+    i_match = re.search(r"Integrated loudness:\s+I:\s+([-\d.]+|-\s*inf)\s+LUFS", output, re.IGNORECASE)
+    lra_match = re.search(r"Loudness range:\s+LRA:\s+([-\d.]+|-\s*inf)\s+LU", output, re.IGNORECASE)
+    tp_match = re.search(r"True peak:\s+Peak:\s+([-\d.]+|-\s*inf)\s+dBFS", output, re.IGNORECASE)
 
     if not i_match or not tp_match:
         raise ValueError("No se pudieron extraer los valores EBU R128 del log de FFmpeg.")
 
+    def parse_ebur_val(val_str):
+        if not val_str:
+            return None
+        v = val_str.strip().lower().replace(" ", "")
+        if "inf" in v:
+            return float("-inf")
+        return float(v)
+
     return {
-        "integrated_lufs": float(i_match.group(1)),
-        "loudness_range_lu": float(lra_match.group(1)) if lra_match else None,
-        "true_peak_dbtp": float(tp_match.group(1))
+        "integrated_lufs": parse_ebur_val(i_match.group(1)),
+        "loudness_range_lu": parse_ebur_val(lra_match.group(1)) if lra_match else None,
+        "true_peak_dbtp": parse_ebur_val(tp_match.group(1))
     }
 
 def analyze_media_streams(media_path):
@@ -80,21 +89,25 @@ def run_quality_gate(media_path, exp_w=None, exp_h=None, exp_fps=None):
         tp = audio_stats["true_peak_dbtp"]
         lra = audio_stats["loudness_range_lu"]
 
-        print(f"-> Sonoridad Integrada: {lufs:.1f} LUFS (Objetivo: {TARGET_LUFS_IDEAL} LUFS, rango estricto [{TARGET_LUFS_MIN}, {TARGET_LUFS_MAX}])")
-        print(f"-> Pico Real (True Peak): {tp:.1f} dBTP (Limite maximo: {MAX_TRUE_PEAK_DBTP} dBTP)")
+        lufs_str = "-inf" if math.isinf(lufs) else f"{lufs:.1f}"
+        tp_str = "-inf" if math.isinf(tp) else f"{tp:.1f}"
+        lra_str = "N/A" if lra is None or math.isinf(lra) else f"{lra:.1f}"
+
+        print(f"-> Sonoridad Integrada: {lufs_str} LUFS (Objetivo: {TARGET_LUFS_IDEAL} LUFS, rango estricto [{TARGET_LUFS_MIN}, {TARGET_LUFS_MAX}])")
+        print(f"-> Pico Real (True Peak): {tp_str} dBTP (Limite maximo: {MAX_TRUE_PEAK_DBTP} dBTP)")
         if lra is not None:
-            print(f"-> Rango Dinamico (LRA): {lra:.1f} LU")
+            print(f"-> Rango Dinamico (LRA): {lra_str} LU")
 
         # True Peak check
         if tp > MAX_TRUE_PEAK_DBTP:
             diff = tp - MAX_TRUE_PEAK_DBTP
-            errors.append(f"TRUE PEAK EXCEDIDO: {tp:.2f} dBTP supera el limite de {MAX_TRUE_PEAK_DBTP} dBTP por +{diff:.2f} dB.")
+            errors.append(f"TRUE PEAK EXCEDIDO: {tp_str} dBTP supera el limite de {MAX_TRUE_PEAK_DBTP} dBTP por +{diff:.2f} dB.")
 
         # LUFS range check (ERROR ESTRICTO, NO ADVERTENCIA)
-        if lufs < TARGET_LUFS_MIN:
-            errors.append(f"SONORIDAD FUERA DE NORMA: {lufs:.1f} LUFS esta por debajo del minimo requerido ({TARGET_LUFS_MIN} LUFS).")
+        if math.isinf(lufs) or lufs < TARGET_LUFS_MIN:
+            errors.append(f"SONORIDAD FUERA DE NORMA: {lufs_str} LUFS esta por debajo del minimo requerido ({TARGET_LUFS_MIN} LUFS).")
         elif lufs > TARGET_LUFS_MAX:
-            errors.append(f"SONORIDAD FUERA DE NORMA: {lufs:.1f} LUFS supera el maximo permitido ({TARGET_LUFS_MAX} LUFS).")
+            errors.append(f"SONORIDAD FUERA DE NORMA: {lufs_str} LUFS supera el maximo permitido ({TARGET_LUFS_MAX} LUFS).")
 
     except Exception as e:
         errors.append(f"Error analizando pista de audio EBU R128: {e}")
@@ -111,7 +124,19 @@ def run_quality_gate(media_path, exp_w=None, exp_h=None, exp_fps=None):
         else:
             w = int(vstream["width"])
             h = int(vstream["height"])
-            fps_eval = eval(vstream["r_frame_rate"]) if "/" in str(vstream.get("r_frame_rate", "")) else float(vstream.get("r_frame_rate", 0))
+            r_fps = str(vstream.get("r_frame_rate", "0/0"))
+            if "/" in r_fps:
+                parts = r_fps.split("/")
+                try:
+                    num, den = float(parts[0]), float(parts[1])
+                    fps_eval = (num / den) if den > 0 else float(vstream.get("avg_frame_rate", 0))
+                except Exception:
+                    fps_eval = float(vstream.get("avg_frame_rate", 0))
+            else:
+                try:
+                    fps_eval = float(r_fps)
+                except Exception:
+                    fps_eval = 0.0
             dur = float(fmt.get("duration", 0))
             print(f"-> Video Stream: {w}x{h} @ {fps_eval:.2f} fps | Duracion: {dur:.2f}s")
 

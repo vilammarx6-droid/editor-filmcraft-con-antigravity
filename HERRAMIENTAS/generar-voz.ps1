@@ -80,6 +80,7 @@ if (-not $Texto -or $Texto.Trim() -eq "") {
 Write-Host "=== Generando locución con Edge-TTS (Voz: $Voz) ===" -ForegroundColor Cyan
 Write-Host "Texto a locutar:`n$Texto`n" -ForegroundColor Gray
 
+$tempTxt = Join-Path $env:TEMP "$($NombreSalida)_$([Guid]::NewGuid().ToString().Substring(0,8)).txt"
 $tempMp3 = Join-Path $env:TEMP "$($NombreSalida)_$([Guid]::NewGuid().ToString().Substring(0,8)).mp3"
 $tempVtt = Join-Path $env:TEMP "$($NombreSalida)_$([Guid]::NewGuid().ToString().Substring(0,8)).vtt"
 $finalWav = Join-Path $destAudio "$($NombreSalida).wav"
@@ -87,19 +88,22 @@ $finalSrt = Join-Path $destAudio "$($NombreSalida).srt"
 $finalVtt = Join-Path $destAudio "$($NombreSalida).vtt"
 
 try {
-    # 1. Generar audio y subtítulos con edge-tts
-    & edge-tts --voice $Voz --text $Texto --write-media $tempMp3 --write-subtitles $tempVtt
+    # 1. Escribir texto a archivo temporal UTF-8 para evitar desbordamiento CLI en Windows (>8191 caracteres)
+    [System.IO.File]::WriteAllText($tempTxt, $Texto, [System.Text.Encoding]::UTF8)
+
+    # 2. Generar audio y subtítulos con edge-tts mediante --file
+    & edge-tts --voice $Voz --file $tempTxt --write-media $tempMp3 --write-subtitles $tempVtt
     if (-not (Test-Path -LiteralPath $tempMp3)) {
         throw "Error: no se generó el archivo de audio con edge-tts."
     }
 
-    # 2. Convertir a WAV 48 kHz Estéreo (estándar nativo de FilmCraft)
+    # 3. Convertir a WAV 48 kHz Estéreo (estándar nativo de FilmCraft)
     Write-Host "Convirtiendo a WAV 48kHz estéreo para FilmCraft..." -ForegroundColor Gray
     $prevEA = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
     & ffmpeg -y -loglevel error -i $tempMp3 -ar 48000 -ac 2 $finalWav
     
-    # 3. Guardar subtítulos en VTT y SRT
+    # 4. Guardar subtítulos en VTT y SRT
     if (Test-Path -LiteralPath $tempVtt) {
         Copy-Item -LiteralPath $tempVtt -Destination $finalVtt -Force
         & ffmpeg -y -loglevel error -i $tempVtt $finalSrt
@@ -117,6 +121,7 @@ try {
     }
     Write-Host "`nListo para importar al timeline de FilmCraft." -ForegroundColor Cyan
 } finally {
+    if (Test-Path -LiteralPath $tempTxt) { Remove-Item -LiteralPath $tempTxt -Force -ErrorAction SilentlyContinue }
     if (Test-Path -LiteralPath $tempMp3) { Remove-Item -LiteralPath $tempMp3 -Force -ErrorAction SilentlyContinue }
     if (Test-Path -LiteralPath $tempVtt) { Remove-Item -LiteralPath $tempVtt -Force -ErrorAction SilentlyContinue }
 }

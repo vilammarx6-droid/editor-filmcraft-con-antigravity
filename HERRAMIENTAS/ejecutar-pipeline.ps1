@@ -83,8 +83,11 @@ if ($hasGuion) {
 # 3. Comprobar proyecto FilmCraft y Montaje Real
 Write-Host "`n[Fase 2/4] Validacion de Linea de Tiempo en FilmCraft..." -ForegroundColor Yellow
 $fcDir = Join-Path $Proyecto "02_filmcraft"
-$fcprojFile = Get-ChildItem -LiteralPath $fcDir -Filter "*.fcproj" -File -ErrorAction SilentlyContinue |
-    Where-Object { $_.DirectoryName -notmatch "Auto-Save" } | Select-Object -First 1
+$candidatosFc = Get-ChildItem -LiteralPath $fcDir -Filter "*.fcproj" -File -ErrorAction SilentlyContinue |
+    Where-Object { $_.DirectoryName -notmatch "Auto-Save" }
+$fcprojFile = $candidatosFc | Sort-Object {
+    if ($_.BaseName -match '_v(\d+)') { [int]$matches[1] } else { 0 }
+}, LastWriteTime -Descending | Select-Object -First 1
 
 if (-not $fcprojFile) {
     throw "FALLO CRITICO: No existe ningun archivo .fcproj en $fcDir. El pipeline exige una linea de tiempo real montada en FilmCraft."
@@ -100,15 +103,27 @@ Write-Host "`n[Fase 3/4] Validacion de Activos y Manifiestos de EffectCraft..." 
 $gfxDir = Join-Path $Proyecto "01_fuentes\graficos"
 $disenoFiles = Get-ChildItem -LiteralPath $gfxDir -Filter "*diseno*.json" -File -ErrorAction SilentlyContinue
 if ($disenoFiles) {
-    $gfxManifest = Join-Path $gfxDir "render-manifest.json"
-    if (-not (Test-Path $gfxManifest)) {
-        throw "FALLO DE CONTRATO GRAFICO: Existen especificaciones de diseno en $gfxDir pero falta 'render-manifest.json'. Todo render debe estar verificado criptograficamente."
+    foreach ($df in $disenoFiles) {
+        $baseName = $df.BaseName
+        $specificManifest = Join-Path $gfxDir "render-manifest-$baseName.json"
+        $globalManifest   = Join-Path $gfxDir "render-manifest.json"
+        
+        $targetManifest = $null
+        if (Test-Path $specificManifest) {
+            $targetManifest = $specificManifest
+        } elseif (Test-Path $globalManifest) {
+            $targetManifest = $globalManifest
+        }
+
+        if (-not $targetManifest) {
+            throw "FALLO DE CONTRATO GRAFICO: Existen especificaciones de diseno en $($df.Name) pero falta 'render-manifest.json' o 'render-manifest-$baseName.json'. Todo render debe estar verificado criptograficamente."
+        }
+        $gm = Get-Content $targetManifest -Raw -Encoding UTF8 | ConvertFrom-Json
+        if ($gm.status -ne "ok") {
+            throw "FALLO DE CONTRATO GRAFICO: El manifiesto '$((Split-Path -Leaf $targetManifest))' reporta status='$($gm.status)'. El auditor rechaza assets fallidos."
+        }
+        Write-Host "  -> Manifiesto de EffectCraft verificado para $($df.Name): $($gm.output_file) (SHA256: $($gm.sha256.Substring(0,16))..., Alfa: $($gm.has_alpha))" -ForegroundColor Green
     }
-    $gm = Get-Content $gfxManifest -Raw -Encoding UTF8 | ConvertFrom-Json
-    if ($gm.status -ne "ok") {
-        throw "FALLO DE CONTRATO GRAFICO: El render-manifest.json reporta status='$($gm.status)'. El auditor rechaza assets fallidos."
-    }
-    Write-Host "  -> Manifiesto de EffectCraft verificado: $($gm.output_file) (SHA256: $($gm.sha256.Substring(0,16))..., Alfa: $($gm.has_alpha))" -ForegroundColor Green
 } else {
     Write-Host "  -> No se detectaron especificaciones de diseno EffectCraft en este proyecto." -ForegroundColor Gray
 }
@@ -161,11 +176,12 @@ $candidateFiles = @(
     (Join-Path $Proyecto "00_brief\brief.md"),
     (Join-Path $Proyecto "01_fuentes\audio\locucion.wav"),
     (Join-Path $Proyecto "01_fuentes\audio\locucion.srt"),
-    (Join-Path $Proyecto "01_fuentes\graficos\render-manifest.json"),
     (Join-Path $Proyecto "04_previews\collage_qc.png")
 )
-# Agregar overlays en 01_fuentes/graficos
+# Agregar disenos, manifiestos y overlays en 01_fuentes/graficos
 if (Test-Path $gfxDir) {
+    Get-ChildItem -LiteralPath $gfxDir -Filter "*manifest*.json" -File | ForEach-Object { $candidateFiles += $_.FullName }
+    Get-ChildItem -LiteralPath $gfxDir -Filter "*diseno*.json" -File | ForEach-Object { $candidateFiles += $_.FullName }
     Get-ChildItem -LiteralPath $gfxDir -Filter "*.mov" -File | ForEach-Object { $candidateFiles += $_.FullName }
     Get-ChildItem -LiteralPath $gfxDir -Filter "*.png" -File | ForEach-Object { $candidateFiles += $_.FullName }
 }
@@ -173,6 +189,7 @@ if ($masterVideos -and $masterVideos.Count -gt 0) {
     $candidateFiles += $masterVideos[0].FullName
 }
 if ($fcprojFile) { $candidateFiles += $fcprojFile.FullName }
+$candidateFiles = $candidateFiles | Select-Object -Unique
 
 foreach ($cf in $candidateFiles) {
     if (Test-Path -LiteralPath $cf) {

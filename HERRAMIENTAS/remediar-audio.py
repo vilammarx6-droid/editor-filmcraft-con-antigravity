@@ -56,7 +56,7 @@ def remediate_file(input_file, output_file=None):
         "ffmpeg", "-y", "-i", input_file,
         "-c:v", "copy",
         "-af", af_filter,
-        "-c:a", "aac", "-b:a", "192k",
+        "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
         output_file
     ]
     res2 = subprocess.run(cmd_pass2, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, errors="replace")

@@ -18,6 +18,26 @@
                                                         "{{REPO_ROOT}}"
                                                     ],
                                            "command":  "{{EFFECTCRAFT_CLI}}"
-                                       }
+                                       },
+                       "photocraft":  {
+                                          "args":  [
+                                                       "mcp",
+                                                       "--automation-read-root",
+                                                       "{{REPO_ROOT}}",
+                                                       "--automation-write-root",
+                                                       "{{REPO_ROOT}}"
+                                                   ],
+                                          "command":  "{{PHOTOCRAFT_CLI}}"
+                                      },
+                       "soundcraft":  {
+                                          "args":  [
+                                                       "mcp",
+                                                       "--automation-read-root",
+                                                       "{{REPO_ROOT}}",
+                                                       "--automation-write-root",
+                                                       "{{REPO_ROOT}}"
+                                                   ],
+                                          "command":  "{{SOUNDCRAFT_CLI}}"
+                                      }
                    }
 }

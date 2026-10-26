@@ -270,9 +270,11 @@ def render_design(diseno_path):
     print("[*] Verificando especificaciones de salida (dimensiones, fps, frames y canal alfa)...")
     media_stats = verify_output_media(output_path, fmt, chans, float(fps_val))
 
-    # 7. Generar render-manifest.json
+    # 7. Generar render-manifest.json (global y específico por diseño)
     out_dir = os.path.dirname(output_path)
     manifest_path = os.path.join(out_dir, "render-manifest.json")
+    diseno_base = os.path.splitext(os.path.basename(diseno_path))[0]
+    manifest_specific_path = os.path.join(out_dir, f"render-manifest-{diseno_base}.json")
     
     manifest_data = {
         "schema_version": "1.0.0",
@@ -296,14 +298,16 @@ def render_design(diseno_path):
         "values_applied": diseno.get("values", {})
     }
 
-    with open(manifest_path, "w", encoding="utf-8") as f:
-        json.dump(manifest_data, f, indent=2)
+    for m_path in (manifest_path, manifest_specific_path):
+        with open(m_path, "w", encoding="utf-8") as f:
+            json.dump(manifest_data, f, indent=2)
 
     print(f"[OK] Render completado y manifest emitido:")
     print(f"     Archivo:   {output_path}")
     print(f"     SHA256:    {media_stats['sha256']}")
     print(f"     Alfa (a):  {media_stats['has_alpha']}")
     print(f"     Manifest:  {manifest_path}")
+    print(f"     Especif.:  {manifest_specific_path}")
     print("=" * 65)
 
     return manifest_data

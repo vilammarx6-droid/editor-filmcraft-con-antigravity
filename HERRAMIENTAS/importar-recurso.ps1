@@ -17,9 +17,23 @@ $recursosRoot = Join-Path $workspaceRoot "RECURSOS_COMPARTIDOS"
 
 # Resolver carpeta de proyecto
 if (-not (Test-Path -LiteralPath $Proyecto)) {
-    $posible = Join-Path $workspaceRoot $Proyecto
-    if (Test-Path -LiteralPath $posible) {
-        $Proyecto = $posible
+    $candidatos = @(
+        (Join-Path $workspaceRoot $Proyecto),
+        (Join-Path $workspaceRoot "PROYECTOS\$Proyecto")
+    )
+    $hallado = $candidatos | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+
+    if (-not $hallado) {
+        $proyectosDir = Join-Path $workspaceRoot "PROYECTOS"
+        if (Test-Path $proyectosDir) {
+            $match = Get-ChildItem -LiteralPath $proyectosDir -Directory |
+                Where-Object { $_.Name -like "*$Proyecto*" } | Select-Object -First 1
+            if ($match) { $hallado = $match.FullName }
+        }
+    }
+
+    if ($hallado) {
+        $Proyecto = $hallado
     } else {
         throw "No se encontró el proyecto en: $Proyecto"
     }

@@ -125,4 +125,6 @@ if __name__ == "__main__":
     parser.add_argument("--frames", nargs="*", help="Lista explícita de fotogramas a incluir")
     args = parser.parse_args()
 
-    make_collage(args.proyecto, args.frames)
+    result = make_collage(args.proyecto, args.frames)
+    if not result:
+        sys.exit(1)

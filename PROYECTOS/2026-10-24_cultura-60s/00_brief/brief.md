@@ -31,3 +31,16 @@
 - Fecha de entrega: 2026-10-24
 - Estado: Completado y exportado
 - Export: `03_exports/cultura-60s_v01_vertical_720.mp4`
+
+## Guion
+
+Cultura: sesenta segundos para sentirla.
+Música: el pulso de un pueblo.
+Danza: el cuerpo también habla.
+Tradición: lo que se repite, permanece.
+Comida: la memoria tiene sabor.
+Lengua: cada palabra es un territorio.
+Arte: mirar distinto, crear distinto.
+Fiesta: la alegría también es memoria.
+Memoria: lo que recordamos nos sostiene.
+Identidad: no es pasado. Es lo que viene.
