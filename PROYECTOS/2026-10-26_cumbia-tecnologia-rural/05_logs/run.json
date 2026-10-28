@@ -1,0 +1,15 @@
+{
+    "schema_version": "1.0.0",
+    "project": "2026-10-26_cumbia-tecnologia-rural",
+    "timestamp_utc": "2026-10-26T18:45:15Z",
+    "pipeline_status": "SUCCESS",
+    "target_video": "cumbia-tecnologia-rural_v01_vertical_720.mp4",
+    "video_sha256": "EAA1849AEAB23F37B6F95748A2FC1C442D2C2C3BAB22CF13FA5585D27B24E76C",
+    "thumbnail_sha256": "7CF401FAA18A6EE7635267EB19E9B6025BA548BE658D97F8B8C8823A6211AB2F",
+    "fcproj_sha256": "1C036ED598B7C19415F2A0893643328A6A14EFF2A9C3091F1A3A54B7D0DE9147",
+    "duration_seconds": 120.0,
+    "format": "vertical_720 (720x1280 @ 30fps)",
+    "quality_gate": "PASSED",
+    "integrated_lufs": -14.3,
+    "true_peak_dbtp": -1.5
+}

@@ -17,10 +17,28 @@ param(
 
     [switch]$RegenerarVoz,
 
-    [switch]$OmitirQualityGate
+    [switch]$OmitirQualityGate,
+
+    [string]$Plan = "",
+
+    [switch]$PermitirTimelineExistente
 )
 
 $ErrorActionPreference = "Stop"
+$pyCmd = "python"
+$repoRoot = Split-Path -Parent $PSScriptRoot
+
+function Get-RelativePathCompat {
+    param([string]$Base, [string]$Target)
+    $baseFull = [IO.Path]::GetFullPath($Base).TrimEnd('\') + '\'
+    $targetFull = [IO.Path]::GetFullPath($Target)
+    if ($targetFull.StartsWith($baseFull, [StringComparison]::OrdinalIgnoreCase)) {
+        return $targetFull.Substring($baseFull.Length)
+    }
+    $baseUri = New-Object System.Uri($baseFull)
+    $targetUri = New-Object System.Uri($targetFull)
+    return [Uri]::UnescapeDataString($baseUri.MakeRelativeUri($targetUri).ToString()).Replace('/', '\')
+}
 
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host " [PIPELINE] Orquestador Determinista de Produccion        " -ForegroundColor Cyan
@@ -49,6 +67,9 @@ if (-not (Test-Path -LiteralPath $Proyecto)) {
     else { throw "No se encontro el proyecto: $Proyecto" }
 }
 
+$Proyecto = (Resolve-Path -LiteralPath $Proyecto).Path
+$logsDir = Join-Path $Proyecto "05_logs"
+New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
 Write-Host "-> Proyecto detectado: $Proyecto" -ForegroundColor Green
 
 # 2. Comprobar contrato de brief y guion
@@ -57,7 +78,7 @@ if (-not (Test-Path $briefPath)) {
     throw "Falta el archivo de contrato del brief: $briefPath"
 }
 
-Write-Host "`n[Fase 1/4] Validacion de Guion y Sintesis de Audio..." -ForegroundColor Yellow
+Write-Host "`n[Fase 1/6] Validacion de Guion y Sintesis de Audio..." -ForegroundColor Yellow
 $audioDir = Join-Path $Proyecto "01_fuentes\audio"
 $locucionWav = Join-Path $audioDir "locucion.wav"
 
@@ -80,20 +101,67 @@ if ($hasGuion) {
     Write-Host "  -> Proyecto sin locucion hablada (musical o instrumental). Omitiendo TTS." -ForegroundColor Gray
 }
 
-# 3. Comprobar proyecto FilmCraft y Montaje Real
-Write-Host "`n[Fase 2/4] Validacion de Linea de Tiempo en FilmCraft..." -ForegroundColor Yellow
+# 3. Montaje real desde edit-plan.json (o auditoria explicita de timeline existente)
+Write-Host "`n[Fase 2/6] Montaje Real desde edit-plan.json..." -ForegroundColor Yellow
 $fcDir = Join-Path $Proyecto "02_filmcraft"
-$candidatosFc = Get-ChildItem -LiteralPath $fcDir -Filter "*.fcproj" -File -ErrorAction SilentlyContinue |
-    Where-Object { $_.DirectoryName -notmatch "Auto-Save" }
-$fcprojFile = $candidatosFc | Sort-Object {
-    if ($_.BaseName -match '_v(\d+)') { [int]$matches[1] } else { 0 }
-}, LastWriteTime -Descending | Select-Object -First 1
+$editManifestPath = Join-Path $fcDir "edit-manifest.json"
+$editManifest = $null
+$planPath = $null
 
-if (-not $fcprojFile) {
-    throw "FALLO CRITICO: No existe ningun archivo .fcproj en $fcDir. El pipeline exige una linea de tiempo real montada en FilmCraft."
+if ($Plan) {
+    $candidatePlan = $Plan
+    if (-not [IO.Path]::IsPathRooted($candidatePlan)) {
+        $projectPlan = Join-Path $Proyecto $candidatePlan
+        if (Test-Path -LiteralPath $projectPlan) { $candidatePlan = $projectPlan }
+    }
+    if (-not (Test-Path -LiteralPath $candidatePlan)) {
+        throw "No existe el edit-plan indicado: $candidatePlan"
+    }
+    $planPath = (Resolve-Path -LiteralPath $candidatePlan).Path
+} else {
+    foreach ($rel in @("00_brief\edit-plan.json", "01_fuentes\edit-plan.json", "02_filmcraft\edit-plan.json")) {
+        $candidatePlan = Join-Path $Proyecto $rel
+        if (Test-Path -LiteralPath $candidatePlan) {
+            $planPath = $candidatePlan
+            break
+        }
+    }
 }
 
-& "$PSScriptRoot\resumir-timeline.ps1" -Proyecto $Proyecto
+if ($planPath) {
+    Write-Host "  -> Plan detectado: $planPath" -ForegroundColor Gray
+    & $pyCmd "$PSScriptRoot\montar-proyecto.py" --project $Proyecto --plan $planPath
+    if ($LASTEXITCODE -ne 0) {
+        throw "FALLO CRITICO: El montador no pudo construir/exportar el proyecto desde el plan."
+    }
+    if (-not (Test-Path -LiteralPath $editManifestPath)) {
+        throw "FALLO CRITICO: El montador no emitio edit-manifest.json."
+    }
+    $editManifest = Get-Content -LiteralPath $editManifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    if ($editManifest.status -ne "ok") {
+        throw "FALLO CRITICO: edit-manifest.json reporta status='$($editManifest.status)'."
+    }
+    $timelineRel = $editManifest.timeline_file
+    $fcprojFile = Get-Item -LiteralPath (Join-Path $Proyecto $timelineRel) -ErrorAction SilentlyContinue
+    if (-not $fcprojFile) {
+        throw "FALLO CRITICO: edit-manifest.json referencia un timeline inexistente: $timelineRel"
+    }
+} elseif ($PermitirTimelineExistente) {
+    Write-Warning "Modo auditoria: se acepta un .fcproj existente sin edit-plan.json. No se esta editando nada nuevo."
+    $candidatosFc = Get-ChildItem -LiteralPath $fcDir -Filter "*.fcproj" -File -ErrorAction SilentlyContinue |
+        Where-Object { $_.DirectoryName -notmatch "Auto-Save" }
+    $fcprojFile = $candidatosFc | Sort-Object {
+        if ($_.BaseName -match '_v(\d+)') { [int]$matches[1] } else { 0 }
+    }, LastWriteTime -Descending | Select-Object -First 1
+    if (-not $fcprojFile) {
+        throw "FALLO CRITICO: No existe ningun archivo .fcproj en $fcDir."
+    }
+} else {
+    throw "FALLO CRITICO: No existe edit-plan.json. El pipeline ya no acepta timelines existentes como si fueran edicion nueva. Cree 00_brief/edit-plan.json o use -PermitirTimelineExistente solo para auditar un proyecto ya montado."
+}
+
+Write-Host "`n[Fase 2.1/6] Verificacion de Linea de Tiempo en FilmCraft..." -ForegroundColor Yellow
+& "$PSScriptRoot\resumir-timeline.ps1" -Proyecto $Proyecto -Fcproj $fcprojFile.FullName -ForzarDisco
 if ($LASTEXITCODE -ne 0) {
     throw "FALLO CRITICO: La linea de tiempo de FilmCraft en $($fcprojFile.Name) esta corrupta o no pudo ser leida."
 }
@@ -152,27 +220,45 @@ if ($audioManifests) {
 
 # 5. Generar Collage de Auditoria QA
 Write-Host "`n[Fase 4/6] Generacion de Collage Determinista QA..." -ForegroundColor Yellow
-$pyCmd = "python"
 & $pyCmd "$PSScriptRoot\crear-collage-qa.py" $Proyecto
+if ($LASTEXITCODE -ne 0) {
+    throw "FALLO CRITICO: No se pudo generar el collage QA determinista."
+}
 
 # 6. Quality Gate de Export Estricto y Miniaturas
 Write-Host "`n[Fase 5/6] Ejecutando Quality Gate de Audio y Video..." -ForegroundColor Yellow
 $exportsDir = Join-Path $Proyecto "03_exports"
-$masterVideos = Get-ChildItem -LiteralPath $exportsDir -Filter "*.mp4" -File -ErrorAction SilentlyContinue |
-    Sort-Object LastWriteTime -Descending
+$masterVideos = $null
+
+if ($editManifest) {
+    if (-not $editManifest.exported -or -not $editManifest.master_file) {
+        throw "FALLO CRITICO: El plan fue montado sin exportar master. El pipeline exige export desde la timeline."
+    }
+    $manifestMaster = Join-Path $Proyecto $editManifest.master_file
+    if (-not (Test-Path -LiteralPath $manifestMaster)) {
+        throw "FALLO CRITICO: edit-manifest.json referencia un master inexistente: $($editManifest.master_file)"
+    }
+    $masterVideos = @(Get-Item -LiteralPath $manifestMaster)
+} else {
+    $masterVideos = Get-ChildItem -LiteralPath $exportsDir -Filter "*.mp4" -File -ErrorAction SilentlyContinue |
+        Sort-Object LastWriteTime -Descending
+}
 
 if (-not $masterVideos) {
     Write-Host "`n[FALLO FATAL] No existe ningun video master exportado (*.mp4) en $exportsDir." -ForegroundColor Red
     Write-Host "Un pipeline de produccion de video no puede declarar exito sin video final montado y renderizado." -ForegroundColor Red
     
     $failedRun = @{
-        schema_version  = "1.0.0"
+        schema_version  = "1.1.0"
         session_id      = [Guid]::NewGuid().ToString()
         timestamp_utc   = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
         pipeline_status = "FAILED_NO_MASTER"
         exit_code       = 1
         project         = (Split-Path -Leaf $Proyecto)
         quality_gate    = "FAILED"
+        edit_plan       = if ($planPath) { (Get-RelativePathCompat -Base $Proyecto -Target $planPath).Replace('\', '/') } else { $null }
+        edit_manifest   = if ($editManifest) { "02_filmcraft/edit-manifest.json" } else { $null }
+        timeline        = if ($fcprojFile) { (Get-RelativePathCompat -Base $Proyecto -Target $fcprojFile.FullName).Replace('\', '/') } else { $null }
         error           = "No se encontro ningun archivo .mp4 master en 03_exports"
     }
     $runJsonPath = Join-Path $Proyecto "05_logs\run.json"
@@ -184,19 +270,36 @@ $targetVideo = $masterVideos[0].FullName
 Write-Host "  -> Auditando master: $($masterVideos[0].Name)" -ForegroundColor Cyan
 
 if (-not $OmitirQualityGate) {
-    & $pyCmd "$PSScriptRoot\auditar-calidad.py" $targetVideo
+    $auditArgs = @($targetVideo)
+    if ($editManifest) {
+        $auditArgs += @(
+            "--width", [string]$editManifest.sequence.width,
+            "--height", [string]$editManifest.sequence.height,
+            "--fps", [string]$editManifest.sequence.fps,
+            "--channels", "2",
+            "--duration", [string]$editManifest.duration_seconds,
+            "--duration-tolerance", "0.25"
+        )
+    }
+    & $pyCmd "$PSScriptRoot\auditar-calidad.py" @auditArgs
     if ($LASTEXITCODE -ne 0) {
         Write-Host "`n[BLOQUEO DE CALIDAD] El master NO cumple los estandares de emision." -ForegroundColor Red
         Write-Host "Ejecuta: python .\HERRAMIENTAS\remediar-audio.py `"$targetVideo`"" -ForegroundColor Yellow
         
         # Registrar run.json con estado fallido
         $failedRun = @{
-            session_id      = [Guid]::NewGuid().ToString()
-            timestamp_utc   = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-            pipeline_status = "FAILED_QUALITY_GATE"
-            exit_code       = 1
-            project         = (Split-Path -Leaf $Proyecto)
-            target_video    = (Split-Path -Leaf $targetVideo)
+            schema_version    = "1.1.0"
+            session_id        = [Guid]::NewGuid().ToString()
+            timestamp_utc     = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+            pipeline_status   = "FAILED_QUALITY_GATE"
+            exit_code         = 1
+            project           = (Split-Path -Leaf $Proyecto)
+            target_video      = (Split-Path -Leaf $targetVideo)
+            target_video_rel  = (Get-RelativePathCompat -Base $Proyecto -Target $targetVideo).Replace('\', '/')
+            quality_gate      = "FAILED"
+            edit_plan         = if ($planPath) { (Get-RelativePathCompat -Base $Proyecto -Target $planPath).Replace('\', '/') } else { $null }
+            edit_manifest     = if ($editManifest) { "02_filmcraft/edit-manifest.json" } else { $null }
+            timeline          = if ($fcprojFile) { (Get-RelativePathCompat -Base $Proyecto -Target $fcprojFile.FullName).Replace('\', '/') } else { $null }
         }
         $failedRun | ConvertTo-Json -Depth 5 | Set-Content -Path (Join-Path $Proyecto "05_logs\run.json") -Encoding UTF8
         exit 1
@@ -230,41 +333,79 @@ $timestampUtc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 $artifacts = @()
 $candidateFiles = @(
     (Join-Path $Proyecto "00_brief\brief.md"),
+    (Join-Path $Proyecto "00_brief\edit-plan.json"),
     (Join-Path $Proyecto "01_fuentes\audio\locucion.wav"),
     (Join-Path $Proyecto "01_fuentes\audio\locucion.srt"),
-    (Join-Path $Proyecto "04_previews\collage_qc.png")
+    (Join-Path $Proyecto "04_previews\collage_qc.png"),
+    (Join-Path $Proyecto "05_logs\edit-log.md")
 )
-# Agregar disenos, manifiestos y overlays en 01_fuentes/graficos
-if (Test-Path $gfxDir) {
-    Get-ChildItem -LiteralPath $gfxDir -Filter "*manifest*.json" -File | ForEach-Object { $candidateFiles += $_.FullName }
-    Get-ChildItem -LiteralPath $gfxDir -Filter "*diseno*.json" -File | ForEach-Object { $candidateFiles += $_.FullName }
-    Get-ChildItem -LiteralPath $gfxDir -Filter "*.mov" -File | ForEach-Object { $candidateFiles += $_.FullName }
-    Get-ChildItem -LiteralPath $gfxDir -Filter "*.png" -File | ForEach-Object { $candidateFiles += $_.FullName }
-}
-# Agregar manifiestos y audios procesados en 01_fuentes/audio
-if (Test-Path $audioDir) {
-    Get-ChildItem -LiteralPath $audioDir -Filter "*manifest*.json" -File | ForEach-Object { $candidateFiles += $_.FullName }
-    Get-ChildItem -LiteralPath $audioDir -Filter "*master*.wav" -File | ForEach-Object { $candidateFiles += $_.FullName }
-}
-# Agregar miniaturas y manifiestos en 03_exports
-if (Test-Path $exportsDir) {
-    Get-ChildItem -LiteralPath $exportsDir -Filter "*thumbnail*.json" -File | ForEach-Object { $candidateFiles += $_.FullName }
-    Get-ChildItem -LiteralPath $exportsDir -Filter "*thumbnail*.jpg" -File | ForEach-Object { $candidateFiles += $_.FullName }
-    Get-ChildItem -LiteralPath $exportsDir -Filter "*thumbnail*.png" -File | ForEach-Object { $candidateFiles += $_.FullName }
-}
-if ($masterVideos -and $masterVideos.Count -gt 0) {
-    $candidateFiles += $masterVideos[0].FullName
-}
+if ($planPath -and (Test-Path -LiteralPath $planPath)) { $candidateFiles += $planPath }
 if ($fcprojFile) { $candidateFiles += $fcprojFile.FullName }
+
+# Todas las fuentes declaradas por el plan (video, audio, musica, overlays).
+if ($editManifest -and $editManifest.sources) {
+    foreach ($src in $editManifest.sources) {
+        $sourceBase = if ($src.origin -eq "shared") { $repoRoot } else { $Proyecto }
+        $candidateFiles += (Join-Path $sourceBase $src.path)
+    }
+}
+# Medios reales del proyecto, aunque el plan no los declare.
+foreach ($sub in @("01_fuentes\video", "01_fuentes\musica")) {
+    $dir = Join-Path $Proyecto $sub
+    if (Test-Path -LiteralPath $dir) {
+        Get-ChildItem -LiteralPath $dir -File -Recurse |
+            Where-Object { $_.Extension -in @(".mp4", ".mov", ".mkv", ".m4v", ".wav", ".mp3", ".m4a", ".flac") } |
+            ForEach-Object { $candidateFiles += $_.FullName }
+    }
+}
+# Manifiestos, disenos y overlays.
+if (Test-Path $gfxDir) {
+    Get-ChildItem -LiteralPath $gfxDir -File -Recurse |
+        Where-Object { $_.Extension -in @(".json", ".mov", ".png") } |
+        ForEach-Object { $candidateFiles += $_.FullName }
+}
+if (Test-Path $audioDir) {
+    Get-ChildItem -LiteralPath $audioDir -File -Recurse |
+        Where-Object { $_.Extension -in @(".json", ".wav", ".srt", ".vtt") } |
+        ForEach-Object { $candidateFiles += $_.FullName }
+}
+# Timeline y manifiestos de edicion. Se excluyen Auto-Save y versiones viejas
+# de .fcproj para que el libro mayor no arrastre artefactos obsoletos.
+if (Test-Path $fcDir) {
+    Get-ChildItem -LiteralPath $fcDir -File -Recurse |
+        Where-Object {
+            $_.FullName -notmatch '\\Auto-Save\\' -and
+            ($_.Name -like 'edit-manifest*.json')
+        } |
+        ForEach-Object { $candidateFiles += $_.FullName }
+    if ($fcprojFile) { $candidateFiles += $fcprojFile.FullName }
+}
+if (Test-Path $exportsDir) {
+    Get-ChildItem -LiteralPath $exportsDir -File -Recurse |
+        Where-Object { $_.Extension -in @(".json", ".jpg", ".png") } |
+        ForEach-Object { $candidateFiles += $_.FullName }
+    if ($masterVideos) { $candidateFiles += $masterVideos[0].FullName }
+    if ($editManifest -and $editManifest.raw_export) {
+        $rawExportPath = Join-Path $Proyecto $editManifest.raw_export
+        if (Test-Path -LiteralPath $rawExportPath) { $candidateFiles += $rawExportPath }
+    }
+}
+if (Test-Path (Join-Path $Proyecto "04_previews")) {
+    Get-ChildItem -LiteralPath (Join-Path $Proyecto "04_previews") -File -Recurse |
+        Where-Object { $_.Extension -in @(".png", ".jpg") } |
+        ForEach-Object { $candidateFiles += $_.FullName }
+}
+
 $candidateFiles = $candidateFiles | Select-Object -Unique
 
 foreach ($cf in $candidateFiles) {
     if (Test-Path -LiteralPath $cf) {
         $hashObj = Get-FileHash -LiteralPath $cf -Algorithm SHA256
         $item = Get-Item -LiteralPath $cf
+        $relPath = (Get-RelativePathCompat -Base $Proyecto -Target $item.FullName).Replace('\', '/')
         $artifacts += @{
-            file        = (Split-Path -Leaf $cf)
-            rel_path    = $cf.Replace($Proyecto, "").TrimStart("\/")
+            file        = $item.Name
+            rel_path    = $relPath
             sha256      = $hashObj.Hash
             size_bytes  = $item.Length
             modified    = $item.LastWriteTimeUtc.ToString("yyyy-MM-ddTHH:mm:ssZ")
@@ -273,20 +414,25 @@ foreach ($cf in $candidateFiles) {
 }
 
 $runManifest = @{
-    schema_version   = "1.0.0"
+    schema_version   = "1.1.0"
     session_id       = $sessionId
     timestamp_utc    = $timestampUtc
     pipeline_status  = "SUCCESS"
     exit_code        = 0
     project          = (Split-Path -Leaf $Proyecto)
     target_video     = if ($masterVideos) { $masterVideos[0].Name } else { $null }
+    target_video_rel = if ($masterVideos) { (Get-RelativePathCompat -Base $Proyecto -Target $masterVideos[0].FullName).Replace('\', '/') } else { $null }
     quality_gate     = "PASSED"
+    edit_plan        = if ($planPath) { (Get-RelativePathCompat -Base $Proyecto -Target $planPath).Replace('\', '/') } else { $null }
+    edit_manifest    = if ($editManifest) { "02_filmcraft/edit-manifest.json" } else { $null }
+    timeline         = if ($fcprojFile) { (Get-RelativePathCompat -Base $Proyecto -Target $fcprojFile.FullName).Replace('\', '/') } else { $null }
+    sequence         = if ($editManifest) { $editManifest.sequence } else { $null }
     artifacts_count  = $artifacts.Count
     artifacts        = $artifacts
 }
 
 $runJsonPath = Join-Path $Proyecto "05_logs\run.json"
-$runManifest | ConvertTo-Json -Depth 5 | Set-Content -Path $runJsonPath -Encoding UTF8
+$runManifest | ConvertTo-Json -Depth 8 | Set-Content -Path $runJsonPath -Encoding UTF8
 Write-Host "-> Traza de ejecucion verificable registrada: $runJsonPath" -ForegroundColor Cyan
 
 Write-Host "`n[EXITO] Pipeline completado. Todos los contratos y estandares fueron satisfechos." -ForegroundColor Green

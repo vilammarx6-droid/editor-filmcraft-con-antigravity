@@ -66,10 +66,26 @@ def make_collage(project_arg, explicit_frames=None):
     project_path = resolve_project_path(project_arg)
     previews_dir = os.path.join(project_path, "04_previews")
     if not os.path.exists(previews_dir):
-        print(f"No existe la carpeta de previews: {previews_dir}")
-        return None
+        os.makedirs(previews_dir, exist_ok=True)
 
     selected = select_qa_frames(previews_dir, explicit_frames)
+
+    if not selected:
+        # Intento de auto-extracción si existe video exportado en 03_exports
+        exports_dir = os.path.join(project_path, "03_exports")
+        if os.path.exists(exports_dir):
+            mp4s = [os.path.join(exports_dir, f) for f in os.listdir(exports_dir) if f.lower().endswith(".mp4")]
+            if mp4s:
+                import subprocess
+                master_vid = mp4s[0]
+                for i in range(1, 5):
+                    frame_out = os.path.join(previews_dir, f"qa_{i:02d}_auto.png")
+                    subprocess.run(
+                        ["ffmpeg", "-y", "-ss", f"00:00:0{i*0.5:.1f}", "-i", master_vid, "-vframes", "1", "-q:v", "2", frame_out],
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                    )
+                selected = select_qa_frames(previews_dir, explicit_frames)
 
     if not selected:
         print("No se encontraron capturas válidas en 04_previews.")

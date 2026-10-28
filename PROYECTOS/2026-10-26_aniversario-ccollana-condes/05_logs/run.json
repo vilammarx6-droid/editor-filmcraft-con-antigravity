@@ -1,0 +1,22 @@
+{
+    "schema_version": "1.0.0",
+    "project": "2026-10-26_aniversario-ccollana-condes",
+    "version": "v03",
+    "revision_type": "SURGICAL_FIX_MASTER",
+    "timestamp_utc": "2026-10-27T01:25:19Z",
+    "pipeline_status": "SUCCESS",
+    "target_video": "aniversario-ccollana-condes_v03_vertical_720.mp4",
+    "video_sha256": "FF972857F84D5074FAE2716D33237E7405874C131525178CD068F54A8C333E14",
+    "thumbnail_sha256": "044530E51FF8894C32FA218812889FBA00A262BA1A17DC3AF2A40074AAC360CD",
+    "fcproj_sha256": "9CFD0F6EA3082FFF545862496F8ED4480B95B4DC5EF8F8F69EE175275B824884",
+    "duration_seconds": 160.007687,
+    "format": "vertical_720 (720x1280 @ 30fps)",
+    "interviews_included": [
+        "Narrador de campo explicando la Tranquilla Ote y troncos de que\u00f1ua",
+        "Don Egidio (Teniente Gobernador) convocando a las comunidades y anunciando 25 toros"
+    ],
+    "design_style": "Minimalista Cinem\u00e1tico con Gradiente de Sombra y Badges",
+    "audio_gaps": "ZERO (pistas ambientales continuas)",
+    "video_gaps": "ZERO (montaje secuencial determinista)",
+    "quality_gate": "PASSED"
+}

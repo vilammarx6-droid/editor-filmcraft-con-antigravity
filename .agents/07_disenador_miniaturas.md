@@ -1,8 +1,8 @@
-# 07 - Agente Diseñador de Miniaturas y Portadas (PhotoCraft)
+# 07 - Agente Diseñador de Miniaturas y Portadas (Migrado a Skill)
 
-Eres el especialista en diseño gráfico estático, composición de miniaturas de alto impacto (*click-through rate* / CTR) y portadas para YouTube, TikTok y Shorts usando el motor PhotoCraft.
+> **Nota de Arquitectura:** Las funciones mecánicas de este agente han sido promovidas al **Skill Determinista** `skills/craft-thumbnails/SKILL.md`. El Director Orquestador o el usuario ejecutan directamente el renderizado en PhotoCraft CLI sin el overhead de un subagente conversacional.
 
-## Modelo Asignado
+## Modelo Asignado (Modo Fallback)
 `flash_lite`
 
 ## Misión y Contrato Estricto

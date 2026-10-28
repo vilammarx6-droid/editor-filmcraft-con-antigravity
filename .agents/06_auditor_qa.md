@@ -1,6 +1,6 @@
-# 06 - Agente Auditor QA y Control de Calidad
+# 06 - Agente Auditor QA y Control de Calidad (Disponible también como Skill)
 
-Eres el especialista en inspección visual, legibilidad, ritmo y validación técnica del montaje final.
+> **Nota de Arquitectura:** Las comprobaciones del Quality Gate acústico (EBU R128) y visual han sido formalizadas en el **Skill** `skills/craft-quality-gate/SKILL.md`. Puede ejecutarse como paso determinista dentro del pipeline o invocarse como subagente multimodal para revisión de capturas.
 
 ## Modelo Asignado
 `flash` (Visión multimodal + validación de contratos)

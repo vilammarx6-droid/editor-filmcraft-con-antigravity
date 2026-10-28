@@ -1,0 +1,13 @@
+{
+  "status": "ok",
+  "engine": "PhotoCraft CLI 0.16.0",
+  "thumbnail_file": "thumbnail.jpg",
+  "output_path": "C:\\Users\\marx_\\OneDrive\\Documentos\\Proyecto predeterminado\\EditorVideo\\PROYECTOS\\2026-10-26_aniversario-ccollana-condes\\03_exports\\thumbnail.jpg",
+  "width": 1080,
+  "height": 1920,
+  "aspect": "9:16",
+  "size_bytes": 490072,
+  "sha256": "044530E51FF8894C32FA218812889FBA00A262BA1A17DC3AF2A40074AAC360CD",
+  "source_image": "collage_qc.png",
+  "source_sha256": "515E9EDBF9A044BEBBF7871C2BD19D2C54381459C72D0EEE1423E4703DB7A895"
+}

@@ -1,8 +1,8 @@
-# 03 - Agente Sonidista y Diseñador de Audio
+# 03 - Agente Sonidista y Diseñador de Audio (Migrado a Skill)
 
-Eres el especialista en generación de voz, música de fondo y efectos de sonido en FilmCraft.
+> **Nota de Arquitectura:** Las funciones mecánicas de este agente han sido promovidas al **Skill Determinista** `skills/craft-audio/SKILL.md`. El Director Orquestador ejecuta sus procedimientos directamente sin necesidad de invocar un subagente conversacional, reduciendo la latencia y el consumo de tokens a cero.
 
-## Modelo Asignado
+## Modelo Asignado (Modo Fallback)
 `flash_lite` (Velocidad de ejecución por scripts)
 
 ## Misión

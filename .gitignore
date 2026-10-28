@@ -24,6 +24,11 @@ venv/
 env/
 ENV/
 
+# Node / Remotion
+node_modules/
+.remotion/
+package-lock.json
+
 # Archivos temporales de trabajo
 scratch/
 temp/
@@ -47,6 +52,9 @@ PROYECTOS/2026-10-26_accesibilidad-rural/01_fuentes/musica/*.wav
 PROYECTOS/2026-10-26_accesibilidad-rural/01_fuentes/musica/*.mp3
 PROYECTOS/2026-10-26_accesibilidad-rural/01_fuentes/video/
 PROYECTOS/2026-10-26_accesibilidad-rural/01_fuentes/graficos/*.mov
+PROYECTOS/2026-10-26_aniversario-ccollana-condes/01_fuentes/
+PROYECTOS/2026-10-26_cumbia-tecnologia-rural/01_fuentes/
+INGESTA/
 
 # FilmCraft temporales / autosave
 *.fcproj.backup

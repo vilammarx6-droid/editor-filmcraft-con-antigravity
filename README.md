@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Engine: FilmCraft 0.9.0](https://img.shields.io/badge/NLE-FilmCraft%200.9.0-6C5CE7.svg)](https://filmcraft.app)
 [![Motion: EffectCraft 0.11.1](https://img.shields.io/badge/Motion-EffectCraft%200.11.1-FFA502.svg)](https://filmcraft.app)
+[![Web Motion: Remotion 4.0](https://img.shields.io/badge/Web%20Motion-Remotion%204.0-00E5FF.svg)](https://remotion.dev)
 [![Photo: PhotoCraft 0.16.0](https://img.shields.io/badge/Photo-PhotoCraft%200.16.0-0984E3.svg)](https://github.com/storytold/photocraft)
 [![DAW: SoundCraft 0.13.1](https://img.shields.io/badge/DAW-SoundCraft%200.13.1-00CEC9.svg)](https://github.com/storytold/soundcraft)
 [![Architecture: Hybrid Verified Engine](https://img.shields.io/badge/Architecture-Hybrid%20Engine%20(CLI%20%2B%20Agents)-00B894.svg)](#arquitectura-híbrida-verificable-3-capas)
@@ -21,11 +22,12 @@ Todo se ejecuta **localmente en una sola PC**, sin costos recurrentes por API, c
 
 - ⚡ **Arquitectura Híbrida Verificable:** Orquestación cognitiva con contratos formales (`diseno.json`, `render-manifest.json`, `thumbnail-manifest.json`, `run.json`) y ejecución determinista por CLI.
 - 🎨 **Integración Nativa con EffectCraft CLI 0.11.1:** Renderizado de plantillas de movimiento (`.ectemplate`) en **Apple ProRes 4444 RGBA** con canal alfa verificado (`yuva444p12le`) y fotogramas transparentes PNG.
+- ⚛️ **Gráficos Dinámicos y Subtítulos Cinéticos con Remotion 4.x:** Generación de subtítulos animados palabra por palabra a partir de archivos `.srt` y tarjetas infográficas en **Apple ProRes 4444 RGBA** con canal alfa real, previsualización interactiva con Remotion Studio y manifiestos SHA-256.
 - 🖼️ **Diseño de Miniaturas con PhotoCraft CLI 0.16.0:** Generación automatizada de portadas y miniaturas de alto CTR para YouTube/Shorts/TikTok con tipografías de cine y manifiesto SHA-256.
 - 🎚️ **Masterización de Audio con SoundCraft CLI 0.13.1:** Análisis espectral, remuestreo determinista a 48000 Hz estéreo y normalización profesional de stems.
-- 🎛️ **Líneas de Tiempo Multitrack Reales en FilmCraft:** Montaje no lineal programático (`V1`, `V2`, `V3`, `A1`, `A2`, `A3`) en proyectos nativos `.fcproj` vía comandos de lote (`command_batch`) o FilmCraft CLI headless.
-- 🛡️ **Quality Gate Estricto EBU R128:** El exportador y el pipeline exigen sonoridad integrada en `[-16.0, -13.0] LUFS` y pico verdadero $\le -1.0$ dBTP; cualquier desviación o clipping aborta con `exit 1`.
-- 🔐 **Auditoría Criptográfica Inmutable (`run.json`):** Cada ejecución registra los SHA-256, tamaños de archivo y fecha de modificación de cada activo (brief, locución, SRT, manifest de EffectCraft, miniatura PhotoCraft, timeline `.fcproj`, collage QA y video master).
+- 🎛️ **Montaje Determinista desde `edit-plan.json`:** `montar-proyecto.py` valida el contrato, importa las fuentes, coloca clips con `sourceIn`/duración en pistas `V1..V3` y `A1..A3`, verifica la timeline contra el plan y exporta el master desde FilmCraft. Los comandos de lote/MCP quedan para ajustes interactivos, no para el pipeline.
+- 🛡️ **Quality Gate Estricto EBU R128 + Integridad de Video:** Exige sonoridad `[-16.0, -13.0] LUFS`, pico verdadero $\le -1.0$ dBTP, audio estéreo 48 kHz y duración alineada con el plan; cualquier desviación aborta con `exit 1`.
+- 🔐 **Auditoría Criptográfica Inmutable (`run.json`):** Cada ejecución registra SHA-256, tamaños y fechas de todos los artefactos reales (brief, `edit-plan.json`, cada clip de video, música, locución/SRT, manifiestos EffectCraft/SoundCraft/PhotoCraft, `edit-manifest.json`, timeline `.fcproj`, collage QA y master), con rutas relativas al proyecto y sin Auto-Save.
 - 🎙️ **Locución Neural y Subtítulos Sincronizados:** Voces ultra-realistas con Microsoft Edge-TTS convertidas automáticamente a **WAV 48 kHz estéreo** con exportación de archivos `.srt`.
 - ✂️ **Recorte Inteligente de Silencios:** Limpieza automática de pausas y tiempos muertos en videos crudos utilizando `auto-editor`.
 - 🔍 **Auditoría Visual en Cuadrícula 2x2:** El Auditor QA analiza 4 fotogramas clave deterministas en una sola imagen combinada generada en 0.02s (`collage_qc.png`).
@@ -74,12 +76,12 @@ flowchart TD
 1. **Guionista ➔ Sonidista / Diseñador:** `00_brief/brief.md` con sección obligatoria `## Guion` y tiempos por escena.
 2. **Diseñador ➔ EffectCraft Engine:** Contrato JSON formal `diseno.json` con `template`, `values`, `comp`, `format` (`prores`/`png`), `channels` (`rgba`), `fps` y `output`.
 3. **EffectCraft Engine ➔ Montajista:** Asset renderizado (`overlay.mov` o `.png`) con su correspondiente `render-manifest.json` que valida dimensiones, fps y canal alfa.
-4. **Montajista ➔ FilmCraft Engine:** Montaje en pistas multitrack y persistencia física de `slug_vNN.fcproj`.
-5. **Quality Gate ➔ Orquestador:** Control estricto de audio y video. Si no existe el `.fcproj`, si el render no tiene manifest verificado o si la sonoridad sale de `[-16, -13]` LUFS, se genera **Hard Fail (`exit 1`)** y se aborta el export.
+4. **Montajista ➔ FilmCraft Engine:** `montar-proyecto.py` transforma `edit-plan.json` en `slug_vNN.fcproj`, coloca cada clip en su pista, verifica la timeline y exporta el master desde FilmCraft. No se acepta un `.fcproj` copiado de otro proyecto.
+5. **Quality Gate ➔ Orquestador:** Control estricto de audio y video. Si no existe el `.fcproj`, si el render no tiene manifest verificado, si el audio no es estéreo 48 kHz, si la duración no coincide o si la sonoridad sale de `[-16, -13]` LUFS, se genera **Hard Fail (`exit 1`)** y se aborta el export.
 
 ---
 
-## 🧪 Suite de Pruebas de Integridad (5 Pruebas Automatizadas)
+## 🧪 Suite de Pruebas de Integridad (9 Pruebas Automatizadas)
 
 Para comprobar de forma inmediata e indiscutible que el sistema no depende de rutas locales y que los Quality Gates funcionan de verdad, el repositorio incluye un banco de pruebas automatizado:
 
@@ -91,11 +93,15 @@ powershell -ExecutionPolicy Bypass -File .\HERRAMIENTAS\test-pipeline-suite.ps1
 
 | # | Prueba | Tipo | Criterio de Aprobación | Resultado |
 | :---: | :--- | :--- | :--- | :---: |
-| **1** | **Pipeline Completo End-to-End** | Positiva (Happy Path) | Monta `.fcproj` nativo en FilmCraft, renderiza overlay ProRes 4444 RGBA con EffectCraft 0.11.1, pasa Quality Gate EBU R128 y genera `run.json` con 8 artefactos verificados. | **PASADO (0)** |
+| **1** | **Pipeline Completo End-to-End** | Positiva (Happy Path) | Construye el golden en temporal, monta `.fcproj` nativo en FilmCraft, renderiza overlay ProRes 4444 RGBA, pasa Quality Gate EBU R128 y genera `run.json` con hashes y rutas relativas. | **PASADO (0)** |
 | **2** | **Sonoridad Débil (-25 LUFS)** | Negativa | El Quality Gate detecta audio fuera de `[-16, -13] LUFS` y aborta inmediatamente con `exit 1`. | **PASADO (1)** |
 | **3** | **Clipping y True Peak Excedido** | Negativa | El Quality Gate detecta pico superior a `-1.0 dBTP` (+2.1 dBTP) y bloquea el export con `exit 1`. | **PASADO (1)** |
 | **4** | **Línea de Tiempo `.fcproj` Inexistente** | Negativa | El pipeline exige un archivo `.fcproj` real y rechaza pipelines simulados con `exit 1`. | **PASADO (1)** |
 | **5** | **Diseño EffectCraft sin Manifiesto** | Negativa | El pipeline detecta un asset de diseño sin su `render-manifest.json` verificado y bloquea con `exit 1`. | **PASADO (1)** |
+| **6** | **Master Ausente** | Negativa | Una timeline válida sin video master en `03_exports` no puede declarar éxito. | **PASADO (1)** |
+| **7** | **Miniatura Manipulada** | Negativa | Un SHA-256 de miniatura que no coincide bloquea el pipeline. | **PASADO (1)** |
+| **8** | **Contrato PhotoCraft** | Positiva/Negativa | Rechaza proyecto inexistente, proyecto sin héroe y CLI roto; la salida real se verifica a 1920x1080 con hash. | **PASADO (0/1)** |
+| **9** | **Montador desde `edit-plan.json`** | Positiva | Pipeline sin escape hatch: plan -> timeline V1/A1 -> export FilmCraft -> master normalizado -> `run.json` con clips, música y plan. | **PASADO (0)** |
 
 ---
 
@@ -115,7 +121,7 @@ editor-filmcraft-con-antigravity/
 │   ├── 02_guionista.md                # Prompt del guionista
 │   ├── 03_sonidista.md                # Prompt del sonidista
 │   ├── 04_disenador_visual.md         # Prompt del diseñador visual
-│   ├── 05_montajista.md               # Prompt del montajista (sintaxis FilmCraft batch)
+│   ├── 05_montajista.md               # Montador determinista: edit-plan.json -> .fcproj -> master
 │   ├── 06_auditor_qa.md               # Prompt del auditor visual
 │   ├── mcp_config.json                # Declaración del puente MCP de FilmCraft (:8765)
 │   └── agents/                        # Definiciones persistentes de subagentes
@@ -125,8 +131,13 @@ editor-filmcraft-con-antigravity/
 │   ├── generar-voz.ps1                # Genera voz neural WAV 48kHz con subtítulos .srt
 │   ├── recortar-silencios.ps1         # Limpieza de silencios con auto-editor
 │   ├── importar-recurso.ps1           # Copia selectiva con filtrado (-Filtro "nombre")
+│   ├── ejecutar-pipeline.ps1          # Pipeline: edit-plan -> FilmCraft -> Quality Gate -> run.json
+│   ├── montar-proyecto.py             # Montador genérico: valida plan, monta, exporta y normaliza
+│   ├── auditar-calidad.py             # Quality Gate EBU R128 + estéreo + duración
+│   ├── test-pipeline-suite.ps1        # Suite hermética de 9 pruebas
+│   ├── esquema-edit-plan.schema.json  # Esquema de referencia del contrato de montaje
 │   ├── crear-collage-qa.py            # Ensambla cuadrícula 2x2 en 0.02s para el Auditor
-│   └── resumir-timeline.ps1           # Consulta en vivo FilmCraft y resume pistas e IDs
+│   └── resumir-timeline.ps1           # Resume FilmCraft; -Fcproj y -ForzarDisco para auditoría
 ├── RECURSOS_COMPARTIDOS/              # Biblioteca libre preinstalada (98+ activos listos)
 │   ├── 01_musica/                     # Lofi, Documental, Acústica + memes_y_virales/
 │   ├── 02_efectos_sonido/             # SFX cine + cultural_cusco_chumbivilcas/ + memes_y_virales/
@@ -152,11 +163,12 @@ Todos los scripts se encuentran en la carpeta [`HERRAMIENTAS/`](HERRAMIENTAS/):
 | Script | Lenguaje | Descripción | Ejemplo de Uso |
 | :--- | :--- | :--- | :--- |
 | `setup-entorno.ps1` | PowerShell | Resuelve rutas dinámicas, autodescubre FilmCraft y EffectCraft 0.11.1, genera `mcp_config.json`. | `.\HERRAMIENTAS\setup-entorno.ps1` |
-| `test-pipeline-suite.ps1` | PowerShell | Suite de 5 pruebas de integridad (Happy Path + 4 pruebas negativas de fallo con bloqueo). | `.\HERRAMIENTAS\test-pipeline-suite.ps1` |
-| `ejecutar-pipeline.ps1` | PowerShell | Orquestador determinista: compila assets, monta, audita y firma el `run.json` criptográfico. | `.\HERRAMIENTAS\ejecutar-pipeline.ps1 -Proyecto "PROYECTOS\test-golden-10s"` |
+| `test-pipeline-suite.ps1` | PowerShell | Suite hermética de 9 pruebas: happy path, negativas, contrato PhotoCraft y montador real desde `edit-plan.json`. | `.\HERRAMIENTAS\test-pipeline-suite.ps1` |
+| `ejecutar-pipeline.ps1` | PowerShell | Orquestador determinista: exige `edit-plan.json`, monta/exporta con FilmCraft, audita y firma `run.json`. `-PermitirTimelineExistente` es solo auditoría. | `.\HERRAMIENTAS\ejecutar-pipeline.ps1 -Proyecto "PROYECTOS\2026-10-26_accesibilidad-rural"` |
+| `montar-proyecto.py` | Python (FilmCraft CLI) | Montador genérico: valida el plan y fuentes, crea `.fcproj`, coloca clips, verifica timeline, exporta y normaliza audio. | `python .\HERRAMIENTAS\montar-proyecto.py --project "PROYECTOS\mi-proyecto"` |
 | `effectcraft/ec_render.py` | Python (CLI) | Motor EffectCraft: valida `diseno.json`, renderiza ProRes 4444 RGBA / PNG y emite `render-manifest.json`. | `python .\HERRAMIENTAS\effectcraft\ec_render.py "diseno.json"` |
 | `effectcraft/validar-render.ps1` | PowerShell | Valida soporte ProRes alfa, fotogramas transparentes y 3 pruebas negativas de EffectCraft. | `.\HERRAMIENTAS\effectcraft\validar-render.ps1` |
-| `auditar-calidad.py` | Python (FFmpeg) | Quality Gate estricto: valida EBU R128 (`[-16, -13]` LUFS, True Peak <= -1.0 dBTP, `exit 1` si falla). | `python .\HERRAMIENTAS\auditar-calidad.py "ruta\video.mp4"` |
+| `auditar-calidad.py` | Python (FFmpeg) | Quality Gate estricto: EBU R128, True Peak, resolución/fps, estéreo 48 kHz y duración; `exit 1` si falla. | `python .\HERRAMIENTAS\auditar-calidad.py "ruta\video.mp4" --duration 30` |
 | `remediar-audio.py` | Python (FFmpeg) | Remasteriza y normaliza el audio a -14 LUFS y True Peak <= -1.0 dBTP en 2 pases (mitiga ISP en AAC). | `python .\HERRAMIENTAS\remediar-audio.py "ruta\video.mp4"` |
 | `generar-voz.ps1` | PowerShell | Extrae el guion con regex flexible, genera TTS con Edge-TTS, `.srt` y WAV 48kHz estéreo. | `.\HERRAMIENTAS\generar-voz.ps1 -Proyecto "cultura-60s" -NombreSalida "locucion"` |
 | `abrir-filmcraft.ps1` | PowerShell | Lanza FilmCraft con `--control 8765`, ordenando por versión `_vNN` y cierre seguro no destructivo. | `.\HERRAMIENTAS\abrir-filmcraft.ps1 -Proyecto "mediflow"` |
@@ -164,7 +176,7 @@ Todos los scripts se encuentran en la carpeta [`HERRAMIENTAS/`](HERRAMIENTAS/):
 | `crear-collage-qa.py` | Python (PIL) | Genera `04_previews/collage_qc.png` usando fotogramas deterministas (`qa_01` a `qa_04`). | `python .\HERRAMIENTAS\crear-collage-qa.py "cultura-60s"` |
 | `recortar-silencios.ps1` | PowerShell | Usa `auto-editor` para eliminar pausas vacías de videos crudos. | `.\HERRAMIENTAS\recortar-silencios.ps1 -Video "entrada.mp4" -Salida "recortado.mp4"` |
 | `importar-recurso.ps1` | PowerShell | Copia recursos de la biblioteca compartida a `01_fuentes/` con filtro por nombre. | `.\HERRAMIENTAS\importar-recurso.ps1 -Proyecto "..." -Tipo cultural -Filtro "*wakawaqra*"` |
-| `resumir-timeline.ps1` | PowerShell | Lee el estado en memoria o disco de FilmCraft y devuelve resumen compacto sin gastar tokens. | `.\HERRAMIENTAS\resumir-timeline.ps1 -Proyecto "mediflow"` |
+| `resumir-timeline.ps1` | PowerShell | Lee el estado en memoria o disco de FilmCraft y devuelve resumen compacto. `-Fcproj` fija el archivo exacto y `-ForzarDisco` evita el puente en vivo. | `.\HERRAMIENTAS\resumir-timeline.ps1 -Proyecto "mediflow" -ForzarDisco` |
 
 
 ---
@@ -234,15 +246,23 @@ En PowerShell:
 .\HERRAMIENTAS\nuevo-proyecto.ps1 -Nombre "Mi Primer Video" -Formato vertical_720
 ```
 
-### 5. Abrir FilmCraft con el Puente MCP
+### 5. Definir el Montaje y Ejecutar el Pipeline
+Crea `00_brief/edit-plan.json` (ver ejemplo en `AGENTS.md`) y ejecuta:
+```powershell
+python .\HERRAMIENTAS\montar-proyecto.py --project "PROYECTOS\2026-10-24_mi-primer-video"
+powershell -ExecutionPolicy Bypass -File .\HERRAMIENTAS\ejecutar-pipeline.ps1 -Proyecto "PROYECTOS\2026-10-24_mi-primer-video"
+```
+El pipeline exige el plan; `-PermitirTimelineExistente` es solo para auditar un proyecto ya montado.
+
+### 6. Abrir FilmCraft con el Puente MCP (opcional para ajustes interactivos)
 ```powershell
 .\HERRAMIENTAS\abrir-filmcraft.ps1 -Proyecto "PROYECTOS\2026-10-24_mi-primer-video"
 ```
-*Deja la ventana de FilmCraft abierta: el puerto `8765` escuchará las órdenes de Antigravity.*
+*El montaje canónico es headless con `montar-proyecto.py`. El puente `8765` queda para inspección o ajustes manuales, no para sustituir el contrato.*
 
-### 6. Encargar el Video a Antigravity
+### 7. Encargar el Video a Antigravity
 Abre la carpeta en **Google Antigravity** y escribe un prompt como:
-> *"Director, revisa `PROYECTOS/2026-10-24_mi-primer-video/00_brief/brief.md`. Lanza al Guionista, Sonidista y Diseñador, monta el timeline en FilmCraft, valida los manifiestos de EffectCraft y audita el Quality Gate."*
+> *"Director, revisa `PROYECTOS/2026-10-24_mi-primer-video/00_brief/edit-plan.json`. Ejecuta `montar-proyecto.py`, valida los manifiestos y audita el Quality Gate."*
 
 ---
 
@@ -269,6 +289,9 @@ Antigravity se comunica con las herramientas de producción mediante servidores 
   }
 }
 ```
+
+### Montaje Canónico vs. Ajustes Interactivos
+El pipeline usa `montar-proyecto.py` en modo headless y **no depende del MCP**. Los lotes `command_batch` y el puente `8765` quedan reservados para ajustes interactivos posteriores; cualquier ajuste debe reflejarse también en `edit-plan.json` para que el montaje sea reproducible.
 
 ### Despacho de Lotes (`command_batch`)
 Para evitar la latencia de enviar órdenes una por una, el Montajista despacha las modificaciones en un solo array:

@@ -1,6 +1,10 @@
 param(
     [Parameter(Mandatory = $true)]
-    [string]$Proyecto
+    [string]$Proyecto,
+
+    [string]$Fcproj = "",
+
+    [switch]$ForzarDisco
 )
 
 $ErrorActionPreference = "Stop"
@@ -33,15 +37,32 @@ if (-not (Test-Path -LiteralPath $fcDir)) {
     throw "La carpeta no tiene subdirectorio 02_filmcraft: $Proyecto"
 }
 
-# Ordenar por versión semántica _v(\d+)
-$candidatos = Get-ChildItem -LiteralPath $fcDir -Filter "*.fcproj" -File |
-    Where-Object { $_.DirectoryName -notmatch "Auto-Save" }
+# Si el pipeline ya conoce el .fcproj exacto (edit-manifest), auditar ese y no
+# el "último por fecha", que podría ser una copia o una versión ajena.
+$fcprojItem = $null
 
-$fcproj = $candidatos | Sort-Object {
-    if ($_.BaseName -match '_v(\d+)') { [int]$matches[1] } else { 0 }
-}, LastWriteTime -Descending | Select-Object -First 1
+if ($Fcproj) {
+    if (-not (Test-Path -LiteralPath $Fcproj)) {
+        throw "No existe el .fcproj indicado: $Fcproj"
+    }
+    $fcprojItem = Get-Item -LiteralPath $Fcproj
+    $fcprojFull = [IO.Path]::GetFullPath($fcprojItem.FullName)
+    $fcDirFull = [IO.Path]::GetFullPath($fcDir).TrimEnd('\') + '\'
+    if (-not $fcprojFull.StartsWith($fcDirFull, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "El .fcproj indicado no pertenece a ${fcDir}: $Fcproj"
+    }
+} else {
+    # Ordenar por versión semántica _v(\d+) o fecha
+    $candidatos = Get-ChildItem -LiteralPath $fcDir -Filter "*.fcproj" -File |
+        Where-Object { $_.DirectoryName -notmatch "Auto-Save" }
 
-if (-not $fcproj) {
+    $fcprojItem = $candidatos | Sort-Object -Property @{ Expression = { if ($_.BaseName -match '_v(\d+)') { [int]$matches[1] } else { 0 } } }, @{ Expression = 'LastWriteTime'; Descending = $true } | Select-Object -First 1
+    if (-not $fcprojItem) {
+        $fcprojItem = $candidatos | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    }
+}
+
+if (-not $fcprojItem) {
     Write-Host "No hay ningún .fcproj todavía en $fcDir" -ForegroundColor Yellow
     exit 0
 }
@@ -73,11 +94,15 @@ if (-not (Test-Path -LiteralPath $Cli)) {
 $tcp = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
 $useBridge = $false
 
+if ($ForzarDisco) {
+    $tcp = $null
+}
+
 if ($tcp) {
     $projRaw = & $Cli --bridge "127.0.0.1:$Port" inspect project --compact 2>$null
     if ($LASTEXITCODE -eq 0 -and $projRaw) {
         $projJson = $projRaw | ConvertFrom-Json
-        if ($projJson.path -eq $fcproj.FullName) {
+        if ($projJson.path -eq $fcprojItem.FullName) {
             $useBridge = $true
         }
     }
@@ -87,9 +112,10 @@ if ($useBridge) {
     $seqRaw = & $Cli --bridge "127.0.0.1:$Port" inspect sequence --compact 2>$null
     $modo = "Puente en vivo (127.0.0.1:$Port)"
 } else {
-    $projRaw = & $Cli --project $fcproj.FullName inspect project --compact 2>$null
+    $projPath = $fcprojItem.FullName
+    $projRaw = & $Cli --project "$projPath" inspect project --compact 2>$null
     $projJson = $projRaw | ConvertFrom-Json
-    $seqRaw = & $Cli --project $fcproj.FullName inspect sequence --compact 2>$null
+    $seqRaw = & $Cli --project "$projPath" inspect sequence --compact 2>$null
     $modo = "Headless (disco)"
 }
 
@@ -98,7 +124,7 @@ $durSec = [math]::Round($seqJson.duration / $TicksPerSec, 2)
 
 Write-Host "=== RESUMEN COMPACTO DE FILMCRAFT ($modo) ===" -ForegroundColor Cyan
 Write-Host "Proyecto:  $($projJson.name) | Sin guardar (dirty): $($projJson.dirty) | Rev: $($projJson.revision)" -ForegroundColor Green
-Write-Host "Archivo:   $($fcproj.Name)" -ForegroundColor Green
+Write-Host "Archivo:   $($fcprojItem.Name)" -ForegroundColor Green
 Write-Host "Secuencia: [id=$($seqJson.id)] $($seqJson.name) | $($seqJson.settings.width)x$($seqJson.settings.height) @ $($seqJson.settings.frame_rate.num)fps | Duración: ${durSec}s ($($seqJson.durationFrames) frames)" -ForegroundColor Green
 
 Write-Host "`n--- Medios en Proyecto (Bins) ---" -ForegroundColor Yellow

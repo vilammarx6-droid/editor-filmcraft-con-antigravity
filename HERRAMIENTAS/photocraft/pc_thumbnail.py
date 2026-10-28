@@ -62,9 +62,13 @@ def find_font(repo_root, font_name="Anton-Regular.ttf"):
             return os.path.join(root, font_name)
     return None
 
-def create_thumbnail(project_dir, title=None, subtitle=None, hero_image=None, aspect="16:9", output_file=None, allow_fallback=False):
+def create_thumbnail(project_dir, title=None, subtitle=None, hero_image=None, aspect="16:9", output_file=None, allow_fallback=False, allow_blank=False):
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-    
+    project_dir = os.path.abspath(project_dir)
+
+    if not os.path.isdir(project_dir):
+        raise RuntimeError(f"El proyecto no existe o no es una carpeta: {project_dir}")
+
     # Definir dimensiones según aspecto
     if aspect == "9:16":
         width, height = 1080, 1920
@@ -86,6 +90,12 @@ def create_thumbnail(project_dir, title=None, subtitle=None, hero_image=None, as
                 break
 
     if not hero_image or not os.path.exists(hero_image):
+        if not allow_blank:
+            raise RuntimeError(
+                "No se encontro imagen hero para la miniatura. "
+                "Genere 04_previews/qa_01_frame.png o pase --hero; "
+                "use --allow-blank solo si una portada vacia es intencional."
+            )
         print(f"[!] No se encontro imagen hero para el proyecto: {project_dir}")
         base_img = Image.new("RGB", (width, height), color=(20, 24, 33))
     else:
@@ -209,12 +219,22 @@ def create_thumbnail(project_dir, title=None, subtitle=None, hero_image=None, as
         status_str = "degradado"
         warning_msg = f"PhotoCraft CLI fallo ({err_msg}). Salida generada mediante fallback PIL."
 
-    # Validar dimensiones con PhotoCraft CLI info
+    # Validar dimensiones reales con PhotoCraft CLI info. No se acepta una
+    # salida cuyo tamaño no pueda verificarse.
     try:
         info_res = subprocess.run([pc_cli, "info", output_file], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         doc_info = json.loads(info_res.stdout) if info_res.returncode == 0 else {}
     except Exception:
         doc_info = {}
+
+    if status_str == "ok":
+        info_w = int(doc_info.get("width", 0) or 0)
+        info_h = int(doc_info.get("height", 0) or 0)
+        if info_w != width or info_h != height:
+            raise RuntimeError(
+                "PhotoCraft no pudo verificar la salida: "
+                f"esperado {width}x{height}, info devolvio {info_w}x{info_h}."
+            )
 
     sha256_hash = sha256_file(output_file)
     file_size = os.path.getsize(output_file)
@@ -230,8 +250,16 @@ def create_thumbnail(project_dir, title=None, subtitle=None, hero_image=None, as
         "size_bytes": file_size,
         "sha256": sha256_hash
     }
+    if hero_image and os.path.exists(hero_image):
+        manifest["source_image"] = os.path.basename(hero_image)
+        manifest["source_sha256"] = sha256_file(hero_image)
+    else:
+        manifest["source_image"] = None
+        manifest["source_sha256"] = None
     if warning_msg:
         manifest["warning"] = warning_msg
+    if not hero_image:
+        manifest["warning"] = "Miniatura generada sin imagen hero (--allow-blank)."
 
     manifest_path = os.path.join(os.path.dirname(output_file), "thumbnail-manifest.json")
     with open(manifest_path, "w", encoding="utf-8") as f:
@@ -252,10 +280,20 @@ if __name__ == "__main__":
     parser.add_argument("--hero", help="Ruta a imagen base de partida")
     parser.add_argument("--out", help="Ruta de salida")
     parser.add_argument("--allow-fallback", action="store_true", help="Permitir fallback degradado con PIL si falla PhotoCraft")
+    parser.add_argument("--allow-blank", action="store_true", help="Permitir portada sin imagen hero (solo si es intencional)")
     
     args = parser.parse_args()
     try:
-        manifest = create_thumbnail(args.project, args.title, args.subtitle, args.hero, args.aspect, args.out, allow_fallback=args.allow_fallback)
+        manifest = create_thumbnail(
+            args.project,
+            args.title,
+            args.subtitle,
+            args.hero,
+            args.aspect,
+            args.out,
+            allow_fallback=args.allow_fallback,
+            allow_blank=args.allow_blank,
+        )
         if manifest.get("status") == "degradado" and not args.allow_fallback:
             sys.exit(1)
     except Exception as e:

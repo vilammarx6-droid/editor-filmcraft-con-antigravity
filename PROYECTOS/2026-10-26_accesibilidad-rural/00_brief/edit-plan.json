@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0.0",
+  "project": "2026-10-26_accesibilidad-rural",
+  "description": "Conectividad y accesibilidad digital en comunidades andinas rurales",
+  "sequence": {
+    "name": "Principal",
+    "width": 720,
+    "height": 1280,
+    "fps": 30,
+    "sample_rate": 48000,
+    "video_tracks": 3,
+    "audio_tracks": 2
+  },
+  "duration": 67.0,
+  "allow_gaps": false,
+  "tracks": {
+    "V1": [
+      { "source": "video/escena_01_paisaje_4000m.mp4", "start": 0.0, "in": 0.0, "out": 6.1 },
+      { "source": "video/escena_02_camino_estudiante.mp4", "start": 6.1, "in": 0.0, "out": 7.4 },
+      { "source": "video/escena_03_posta_salud.mp4", "start": 13.5, "in": 0.0, "out": 7.5 },
+      { "source": "video/escena_04_canon_geografia.mp4", "start": 21.0, "in": 0.0, "out": 6.0 },
+      { "source": "video/escena_05_antena_satelital.mp4", "start": 27.0, "in": 0.0, "out": 9.0 },
+      { "source": "video/escena_06_paneles_solares.mp4", "start": 36.0, "in": 0.0, "out": 8.0 },
+      { "source": "video/escena_07_ninos_tablets.mp4", "start": 44.0, "in": 0.0, "out": 7.0 },
+      { "source": "video/escena_08_agricultor_smartphone.mp4", "start": 51.0, "in": 0.0, "out": 5.5 },
+      { "source": "video/escena_09_comunidad_futuro.mp4", "start": 56.5, "in": 0.0, "out": 10.5 }
+    ],
+    "V2": [
+      { "source": "graficos/overlay_01_intro.mov", "start": 1.0, "in": 0.0, "out": 3.0 },
+      { "source": "graficos/overlay_02_satelital.mov", "start": 27.5, "in": 0.0, "out": 3.0 },
+      { "source": "graficos/overlay_03_educacion.mov", "start": 44.5, "in": 0.0, "out": 3.0 }
+    ],
+    "A1": [
+      { "source": "audio/locucion_master.wav", "start": 0.0, "in": 0.0, "out": 66.888 }
+    ],
+    "A2": [
+      { "source": "musica/musica_acustica_48k.wav", "start": 0.0, "in": 0.0, "out": 67.0 }
+    ]
+  },
+  "output": {
+    "slug": "accesibilidad-rural"
+  }
+}

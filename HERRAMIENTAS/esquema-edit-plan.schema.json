@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://editorvideo.local/esquema-edit-plan.schema.json",
+  "title": "edit-plan.json - Contrato de montaje determinista",
+  "description": "Contrato que consume HERRAMIENTAS/montar-proyecto.py. Las rutas de fuentes son relativas a 01_fuentes/ (source_root=project) o a RECURSOS_COMPARTIDOS/ (source_root=shared). El montador además valida existencia, duración, solapamientos, huecos y pistas.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project", "sequence", "duration", "tracks"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["1.0.0", "1.1.0"]
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Nombre exacto del proyecto (o slug sin fecha). Evita reutilizar planes ajenos."
+    },
+    "description": {
+      "type": "string"
+    },
+    "sequence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height", "fps"],
+      "properties": {
+        "name": { "type": "string", "default": "Principal" },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "fps": { "type": "number", "exclusiveMinimum": 0 },
+        "sample_rate": { "type": "integer", "enum": [48000], "default": 48000 },
+        "video_tracks": { "type": "integer", "minimum": 1 },
+        "audio_tracks": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "duration": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Duración total de la secuencia en segundos."
+    },
+    "allow_gaps": {
+      "type": "boolean",
+      "default": false,
+      "description": "Si es false, V1 debe cubrir exactamente [0, duration] sin huecos."
+    },
+    "tracks": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "pattern": "^[VA][1-9][0-9]*$" },
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "start"],
+          "properties": {
+            "source": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^(?![A-Za-z]:).+",
+              "description": "Ruta relativa; nunca absoluta."
+            },
+            "source_root": {
+              "type": "string",
+              "enum": ["project", "shared"],
+              "default": "project"
+            },
+            "license": {
+              "type": "string",
+              "description": "Obligatoria cuando source_root=shared."
+            },
+            "start": { "type": "number", "minimum": 0 },
+            "in": { "type": "number", "minimum": 0, "default": 0 },
+            "out": { "type": "number", "exclusiveMinimum": 0 },
+            "label": { "type": "string" }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "source_root": { "const": "shared" } } },
+              "then": { "required": ["license"] }
+            }
+          ]
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "slug": { "type": "string", "minLength": 1 },
+        "version": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

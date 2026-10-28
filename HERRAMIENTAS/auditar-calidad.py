@@ -5,6 +5,8 @@ Audita el archivo exportado y bloquea la publicación (exit 1) si:
 - La sonoridad integrada está fuera de [-16.0, -13.0] LUFS (Error estricto, no advertencia).
 - El True Peak supera -1.0 dBTP (Clipping/distorsión).
 - La frecuencia de muestreo del audio no es 48,000 Hz.
+- El audio no es estéreo (2 canales).
+- La duración no coincide con la duración esperada del plan.
 - La resolución o framerate no coinciden con los esperados.
 """
 
@@ -21,6 +23,8 @@ TARGET_LUFS_MAX = -13.0
 TARGET_LUFS_IDEAL = -14.0
 MAX_TRUE_PEAK_DBTP = -1.0
 EXPECTED_SAMPLE_RATE = 48000
+EXPECTED_CHANNELS = 2
+DEFAULT_DURATION_TOLERANCE = 0.25
 
 def analyze_audio_ebur128(media_path):
     cmd = [
@@ -69,7 +73,9 @@ def analyze_media_streams(media_path):
         "format": data.get("format", {})
     }
 
-def run_quality_gate(media_path, exp_w=None, exp_h=None, exp_fps=None):
+def run_quality_gate(media_path, exp_w=None, exp_h=None, exp_fps=None,
+                     exp_channels=EXPECTED_CHANNELS, exp_duration=None,
+                     duration_tolerance=DEFAULT_DURATION_TOLERANCE):
     if not os.path.exists(media_path):
         print(f"[ERROR] Archivo no encontrado: {media_path}")
         sys.exit(1)
@@ -143,6 +149,13 @@ def run_quality_gate(media_path, exp_w=None, exp_h=None, exp_fps=None):
             if exp_w and w != exp_w: errors.append(f"Ancho no coincide: esperado {exp_w}, obtenido {w}")
             if exp_h and h != exp_h: errors.append(f"Alto no coincide: esperado {exp_h}, obtenido {h}")
             if exp_fps and abs(fps_eval - exp_fps) > 0.1: errors.append(f"Framerate no coincide: esperado {exp_fps}, obtenido {fps_eval}")
+            if exp_duration is not None:
+                print(f"-> Duracion esperada: {exp_duration:.2f}s (tolerancia +/-{duration_tolerance:.2f}s)")
+                if abs(dur - exp_duration) > duration_tolerance:
+                    errors.append(
+                        f"DURACION FUERA DE CONTRATO: esperada {exp_duration:.2f}s "
+                        f"+/-{duration_tolerance:.2f}s, obtenida {dur:.2f}s."
+                    )
 
         if not astream:
             errors.append("No se encontro flujo de audio en el archivo.")
@@ -152,6 +165,11 @@ def run_quality_gate(media_path, exp_w=None, exp_h=None, exp_fps=None):
             print(f"-> Audio Stream: {sr} Hz | Canales: {ch}")
             if sr != EXPECTED_SAMPLE_RATE:
                 errors.append(f"Frecuencia de muestreo incorrecta: esperado {EXPECTED_SAMPLE_RATE} Hz (FilmCraft Standard), obtenido {sr} Hz.")
+            if exp_channels and ch != exp_channels:
+                errors.append(
+                    f"CANALES INCORRECTOS: esperado {exp_channels} canales (estéreo), "
+                    f"obtenido {ch} canales."
+                )
 
     except Exception as e:
         errors.append(f"Error inspeccionando flujos multimedia: {e}")
@@ -177,6 +195,20 @@ if __name__ == "__main__":
     parser.add_argument("--width", type=int, default=None, help="Ancho esperado")
     parser.add_argument("--height", type=int, default=None, help="Alto esperado")
     parser.add_argument("--fps", type=float, default=None, help="FPS esperado")
+    parser.add_argument("--channels", type=int, default=EXPECTED_CHANNELS,
+                        help="Canales de audio esperados (por defecto 2)")
+    parser.add_argument("--duration", type=float, default=None,
+                        help="Duración esperada en segundos")
+    parser.add_argument("--duration-tolerance", type=float, default=DEFAULT_DURATION_TOLERANCE,
+                        help="Tolerancia de duración en segundos")
     args = parser.parse_args()
 
-    run_quality_gate(args.video_path, args.width, args.height, args.fps)
+    run_quality_gate(
+        args.video_path,
+        args.width,
+        args.height,
+        args.fps,
+        args.channels,
+        args.duration,
+        args.duration_tolerance,
+    )

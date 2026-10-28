@@ -15,6 +15,7 @@ import os
 import sys
 import json
 import subprocess
+import argparse
 
 def get_cli(name):
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -26,14 +27,17 @@ def get_cli(name):
                 return cfg[name]
     raise FileNotFoundError(f"No se encontró la ruta para {name} en config.local.json")
 
-def build_golden_project():
+def build_golden_project(project_dir=None):
     print("=" * 65)
     print(" [ENSAMBLADOR GOLDEN] Montaje Nativo FilmCraft + EffectCraft ")
     print("=" * 65)
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     repo_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
-    proj_dir = os.path.join(repo_root, "PROYECTOS", "test-golden-10s")
+    if project_dir:
+        proj_dir = os.path.abspath(project_dir)
+    else:
+        proj_dir = os.path.join(repo_root, "PROYECTOS", "test-golden-10s")
 
     fc_cli = get_cli("filmcraft_cli")
     ec_cli = get_cli("effectcraft_cli")
@@ -185,4 +189,10 @@ def build_golden_project():
     print("=" * 65)
 
 if __name__ == "__main__":
-    build_golden_project()
+    parser = argparse.ArgumentParser(description="Ensamblador del proyecto golden de 10s")
+    parser.add_argument(
+        "--project-dir",
+        help="Carpeta de proyecto alternativa (para pruebas herméticas; no toca el golden)",
+    )
+    args = parser.parse_args()
+    build_golden_project(args.project_dir)
